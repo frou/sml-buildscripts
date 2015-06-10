@@ -1,0 +1,17 @@
+#!/bin/bash
+set -eu
+
+mlb="$1"; shift
+out=$(basename "$mlb" .mlb)
+if [ "$out" = "$mlb" ]; then
+    echo "Argument must be a .mlb file" 1>&2
+    exit 1
+fi
+
+libdir=${SML_LIB:-/usr/lib/mlton/sml}
+
+rlwrap poly $(grep -v mlb "$mlb" | \
+		     grep -v main | \
+		     sed 's#$(SML_LIB)#'"${libdir}"'#g' | \
+		     sed 's/^\(.*\)$/--use \1/')
+

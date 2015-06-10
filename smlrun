@@ -1,0 +1,27 @@
+#!/bin/sh
+# Run a single .sml file script-style, using Moscow ML
+
+source="$1"
+shift
+
+tmpdir=/tmp/smlrun.$$
+mkdir "$tmpdir" || exit 1
+trap "rm -f $tmpdir/* ; rmdir $tmpdir" 0
+
+if [ ! -f "$source" ]; then
+    if [ -f "$source".sml ]; then
+        source="$source".sml
+    fi
+fi
+
+cp "$source" "$tmpdir/" || exit 1
+
+dir=`pwd`
+cd "$tmpdir/"
+
+mosmlc -o __out "$source" || exit 1
+test -f __out || exit 1
+
+cd "$dir"
+"$tmpdir"/__out "$@"
+

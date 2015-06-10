@@ -1,0 +1,8 @@
+#!/bin/bash
+set -eu
+mlb="$1"
+
+libdir=${SML_LIB:-/usr/lib/mlton/sml}
+
+mosmlc $(grep -v mlb "$mlb" | \
+    		sed 's#$(SML_LIB)#'"${libdir}"'#g') 
