@@ -10,8 +10,13 @@ fi
 
 libdir=${SML_LIB:-/usr/lib/mlton/sml}
 
-rlwrap poly $(grep -v mlb "$mlb" | \
-		     grep -v main | \
-		     sed 's#$(SML_LIB)#'"${libdir}"'#g' | \
-		     sed 's/^\(.*\)$/--use \1/')
+rlwrap poly $(cat "$mlb" | \
+	     fgrep -v basis.mlb |                   # remove incompatible Basis lib
+	     fgrep -v main.sml |                    # remove unneeded call to main
+	     sed 's/(\*[^\*]*\*)//g' |              # remove ML-style comments
+	     sed 's#$(SML_LIB)#'"${libdir}"'#g' |   # expand library path
+	     sed 's/^ *//' |                        # remove leading whitespace
+	     sed 's/ *$//' |                        # remove trailing whitespace
+	     grep -v '^$' |                         # remove empty lines
+	     sed 's/^\(.*\)$/--use \1/')
 
