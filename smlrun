@@ -1,27 +1,61 @@
-#!/bin/sh
-# Run a single .sml file script-style, using Moscow ML
+#!/bin/bash
 
-source="$1"
-shift
+# Run a program defined as an .mlb file using the SML/NJ repl
 
-tmpdir=/tmp/smlrun.$$
-mkdir "$tmpdir" || exit 1
-trap "rm -f $tmpdir/* ; rmdir $tmpdir" 0
+set -e
 
-if [ ! -f "$source" ]; then
-    if [ -f "$source".sml ]; then
-        source="$source".sml
-    fi
+if echo | sml | grep -q Jersey ; then :
+else
+    echo "*** Error: SML/NJ binary 'sml' not in path" 1>&2
+    exit 1
 fi
 
-cp "$source" "$tmpdir/" || exit 1
+arg="$1"
 
-dir=`pwd`
-cd "$tmpdir/"
+if [ -z "$arg" ]; then
+    echo "Usage: $0 file.sml" 1>&2
+    echo "       $0 file.mlb" 1>&2
+    exit 1
+fi
 
-mosmlc -o __out "$source" || exit 1
-test -f __out || exit 1
+set -u
 
-cd "$dir"
-"$tmpdir"/__out "$@"
+mydir=$(dirname "$0")
+. "$mydir/include.sh"
+
+out=$(get_outfile "$arg")
+
+tmpout="/tmp/out.$out.$$.sml"
+trap "rm -f ${tmpout}" 0
+
+expand_arg "$arg" | \
+    sed 's/^\(.*\)$/use "\1";/' |              # wrap filenames in REPL use calls
+    (
+	cat <<EOF
+val smlrun__cp = 
+    let val x = !Control.Print.out in
+        Control.Print.out := { say = fn _ => (), flush = fn () => () };
+        x
+    end;
+val smlrun__prev = ref "";
+Control.Print.out := { 
+    say = fn s => 
+        (if String.isSubstring "Error" s 
+         then (Control.Print.out := smlrun__cp;
+               (#say smlrun__cp) (!smlrun__prev);
+               (#say smlrun__cp) s)
+         else (smlrun__prev := s; ())),
+    flush = fn s => ()
+};
+EOF
+	cat -
+	cat <<EOF
+
+val _ = main ();
+val _ = OS.Process.exit (OS.Process.success);
+EOF
+    ) > "$tmpout"
+
+CM_VERBOSE=false sml "$tmpout" "$@"
+
 

@@ -15,7 +15,9 @@ set -u
 mydir=$(dirname "$0")
 . "$mydir/include.sh"
 
-out=$(get_outfile "$arg")  # we don't use this, but it does some arg error checking
+base=$(get_outfile "$arg")
 
-rlwrap poly $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/')
+deps="$base".deps
+
+expand_arg "$arg" | fmt -60 | sed 's/^/'"$base"': /'
 
