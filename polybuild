@@ -13,7 +13,7 @@ fi
 set -u
 
 mydir=$(dirname "$0")
-. "$mydir/include.sh"
+. "$mydir/smlbuild-include.sh"
 
 out=$(get_outfile "$arg")
 

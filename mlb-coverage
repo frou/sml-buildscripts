@@ -16,7 +16,7 @@ fi
 set -u
 
 mydir=$(dirname "$0")
-. "$mydir/include.sh"
+. "$mydir/smlbuild-include.sh"
 
 PROGRAM=$(get_outfile "$mlb")
 

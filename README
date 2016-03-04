@@ -4,16 +4,20 @@ Build scripts
 
 Scripts to compile and run Standard ML programs defined in .mlb files.
 
+All of these are Bash scripts for Unixy systems, except for one
+PowerShell script for Windows (see below).
+
 The .mlb format is associated with the MLton compiler, and a .mlb file
-can be built using MLton by simply running
+can be built using MLton without any of these scripts by running
 
  $ mlton file.mlb
  $ ./file
 
 But MLton is rather slow to run, for development use, and it's a good
-idea to test code with more than one compiler. The script "polybuild"
-therefore takes a .mlb file and builds an executable from it using the
-Poly/ML compiler:
+idea to test code with more than one compiler.
+
+The script "polybuild" therefore takes a .mlb file and builds an
+executable from it using the Poly/ML compiler:
 
  $ polybuild file.mlb
  $ ./file
@@ -30,19 +34,44 @@ that build both ways but work differently, although I don't think this
 is likely by accident.) Anyway, treat the MLton build as definitive.
 
 
+Build-and-run or build-and-REPL scripts
+=======================================
+
+The script "polyrun" takes a .mlb file and runs it directly in the
+Poly/ML environment (rather than dumping out an executable as
+polybuild does).
+
+The script "polyrepl" takes a .mlb file and loads it into the Poly/ML
+interactive environment (or REPL), leaving you at the REPL prompt.
+
+The script "smlrun" takes a .mlb file and runs it directly using the
+SML/NJ environment.
+
+The PowerShell script "smlrun.ps1", for Windows, takes a .mlb file and
+runs it directly using the SML/NJ environment.
+
+
 Coverage
 ========
 
-The tool coverage.sh uses MLton's profile tool to print out line
+The script "mlb-coverage" uses MLton's profile tool to print out line
 coverage reports for the files making up a program. Run
 
- $ ./coverage.sh file.mlb
+ $ ./mlb-coverage file.mlb
 
 to compile and print an overall coverage summary for the program
 defined in file.mlb, or
 
- $ ./coverage.sh file.mlb sourcefile.sml
+ $ ./mlb-coverage file.mlb sourcefile.sml
 
 to compile file.mlb and print detailed coverage for the single source
 file sourcefile.sml.
+
+
+Dependencies
+============
+
+The script "mlb-dependencies" reads a .mlb file and prints to stdout a
+list of file dependencies in Makefile format. This could be used to
+generate a file that can be included into a project Makefile.
 
