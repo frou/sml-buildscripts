@@ -1,0 +1,48 @@
+
+Build scripts
+=============
+
+Scripts to compile and run Standard ML programs defined in .mlb files.
+
+The .mlb format is associated with the MLton compiler, and a .mlb file
+can be built using MLton by simply running
+
+ $ mlton file.mlb
+ $ ./file
+
+But MLton is rather slow to run, for development use, and it's a good
+idea to test code with more than one compiler. The script "polybuild"
+therefore takes a .mlb file and builds an executable from it using the
+Poly/ML compiler:
+
+ $ polybuild file.mlb
+ $ ./file
+
+Note that if the .mlb file contains other .mlb files, the script
+simply interpolates their content into the parent. This is not the way
+.mlb files are supposed to work: each new .mlb is supposed to be
+elaborated into a new empty environment, which is then brought into
+the parent environment. This can cause incompatibilities in both
+directions: programs that build with MLton but not polybuild, and also
+vice versa. I haven't yet met an incompatibility that couldn't be
+worked around though. (I think it's also possible to define programs
+that build both ways but work differently, although I don't think this
+is likely by accident.) Anyway, treat the MLton build as definitive.
+
+
+Coverage
+========
+
+The tool coverage.sh uses MLton's profile tool to print out line
+coverage reports for the files making up a program. Run
+
+ $ ./coverage.sh file.mlb
+
+to compile and print an overall coverage summary for the program
+defined in file.mlb, or
+
+ $ ./coverage.sh file.mlb sourcefile.sml
+
+to compile file.mlb and print detailed coverage for the single source
+file sourcefile.sml.
+
