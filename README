@@ -34,6 +34,27 @@ that build both ways but work differently, although I don't think this
 is likely by accident.) Anyway, treat the MLton build as definitive.
 
 
+Main function and top-level code
+================================
+
+Different compilers have different conventions for the main entry
+points they generate in a stand-alone executable. MLton produces an
+executable that, when run, invokes any code found at the top level
+during compilation. Compilers such as Poly/ML, that start from an
+interactive environment, usually run that code "at compile time"
+instead. In place of that, Poly/ML expects to find a function called
+"main" that it will make into the entry point for the executable.
+
+The convention used by these scripts is that your program will have a
+main.sml listed at the bottom of its .mlb file, and that main.sml will
+simply call out (at the top level) to a main function that presumably
+has already been defined in an earlier file of code. Thus main.sml
+provides the entry point for MLton. Then the polybuild script will
+*remove* any file called main.sml when it compiles for Poly/ML,
+leaving the main function that this file would have called as the
+entry point.
+
+
 Build-and-run or build-and-REPL scripts
 =======================================
 
