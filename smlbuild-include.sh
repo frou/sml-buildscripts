@@ -35,6 +35,7 @@ cat_mlb() {
 	case "$path" in
 	    "") ;;		                  # ignore empty lines
 	    *basis.mlb) ;;			  # remove incompatible Basis lib
+	    *mlton.mlb) ;;			  # remove incompatible MLton lib
 	    *main.sml) ;;			  # remove redundant call to main
 	    *.mlb) cat_mlb "$path" ;;
 	    *.sml) echo "$path" | simplify ;;
