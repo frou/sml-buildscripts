@@ -25,6 +25,7 @@ cat_mlb() {
 	    echo "$line" | 
 		sed 's/(\*.*\*)//' |              # remove ML-style comments
 		sed 's#$(SML_LIB)#'"${lib}"'#g' | # expand library path
+		perl -p -e 's/\$\(([A-Za-z_-]+)\)/$ENV{$1}/' | # expand other vars
 		sed 's/^ *//' |                   # remove leading whitespace
 		sed 's/ *$//')                    # remove trailing whitespace
 	local path="$trimmed"
