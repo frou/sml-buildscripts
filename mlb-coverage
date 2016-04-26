@@ -1,13 +1,21 @@
 #!/bin/bash
 
 usage () {
+    echo
     echo "Usage: $0 program.mlb" 1>&2
     echo "         prints coverage summary for running program.mlb" 1>&2
     echo "       $0 program.mlb file.sml" 1>&2
     echo "         prints detailed coverage for file.sml in program.mlb" 1>&2
+    echo
     echo "If the args are followed by a double-dash (\"--\"), all subsequent" 1>&2
-    echo "arguments will be passed to the MLton compiler." 1>&2
-    exit 1
+    echo "arguments will be passed to the MLton compiler. If a further \"--\"" 1>&2
+    echo "is found, arguments after that will be passed as object files to the" 1>&2
+    echo "MLton compiler (previous args will go before the .mlb argument)." 1>&2
+    echo
+    echo "e.g." 1>&2
+    echo "$(basename $0) test.mlb srcfile.sml -- -default-ann 'allowFFI true' -- export.o" 1>&2
+    echo 1>&2
+    exit 2
 }
 
 mlb="$1"; shift
