@@ -1,26 +1,54 @@
 #!/bin/bash
 
-set -e
-
-mlb="$1"
-srcfile="$2"
-
-if [ -z "$mlb" ]; then
+usage () {
     echo "Usage: $0 program.mlb" 1>&2
     echo "         prints coverage summary for running program.mlb" 1>&2
     echo "       $0 program.mlb file.sml" 1>&2
     echo "         prints detailed coverage for file.sml in program.mlb" 1>&2
+    echo "If the args are followed by a double-dash (\"--\"), all subsequent" 1>&2
+    echo "arguments will be passed to the MLton compiler." 1>&2
     exit 1
+}
+
+mlb="$1"; shift
+
+srcfile=""
+if [ "$1" != "--" ]; then
+    srcfile="$1"; shift
 fi
 
-set -u
+declare -a mlton_args
+declare -a object_args
+if [ "$1" = "--" ]; then
+    shift
+    while [ "$#" -gt 0 -a "$1" != "--" ]; do
+	mlton_args[${#mlton_args[@]}]="$1"
+	shift
+    done
+    if [ "$1" = "--" ]; then
+	shift
+    fi
+    while [ "$#" -gt 0 ]; do
+	object_args[${#object_args[@]}]="$1"
+	shift
+    done
+elif [ -n "$1" ]; then
+    usage
+fi
+
+if [ -z "$mlb" ]; then usage; fi
+    
+set -e
 
 mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 PROGRAM=$(get_outfile "$mlb")
 
-mlton -profile count -profile-branch true -profile-val true "$PROGRAM.mlb"
+mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "$PROGRAM.mlb" "${object_args[@]}"
+
+set -u
+
 ./"$PROGRAM" >/dev/null
 
 tmpfile=/tmp/"$$"_cov
