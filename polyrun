@@ -22,7 +22,7 @@ tmpout="/tmp/out.$out.$$"
 trap "rm -f ${tmpobj} ${tmpout}" 0
 
 ( expand_arg "$arg" | \
-	sed 's/^\(.*\)$/use "\1";/' ;
+	sed 's|^\(.*\)$|use "\1";|' ;
   echo 'PolyML.export("'"$tmpobj"'", main);' ) | \
     poly -q --error-exit &&
     polyc -o "$tmpout" "$tmpobj" &&

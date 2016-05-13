@@ -21,7 +21,7 @@ obj="/tmp/obj.$$.o"
 trap "rm -f ${obj}" 0
 
 ( expand_arg "$arg" |
-	sed 's/^\(.*\)$/use "\1";/' ;            # wrap filenames in REPL use calls
+	sed 's|^\(.*\)$|use "\1";|' ;            # wrap filenames in REPL use calls
   echo 'PolyML.export("'"$obj"'", main);' ) |    # ask poly to export object file
     poly -q --error-exit &&
     polyc -o "$out" "$obj"                       # compile object to executable

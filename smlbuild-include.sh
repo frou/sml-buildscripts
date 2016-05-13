@@ -10,7 +10,7 @@ else
 fi
 
 simplify() {
-    sed -e 's,^./,,' -e 's,[^/][^/]*/../,,g' -e 's,//,/,g'
+    sed -e 's|^./||' -e 's|[^/][^/]*/../||g' -e 's|//|/|g'
 }
 
 cat_mlb() {
@@ -23,11 +23,11 @@ cat_mlb() {
     cat "$mlb" | while read line; do
 	local trimmed=$(
 	    echo "$line" | 
-		sed 's/(\*.*\*)//' |              # remove ML-style comments
+		sed 's|(\*.*\*)||' |              # remove ML-style comments
 		sed 's#$(SML_LIB)#'"${lib}"'#g' | # expand library path
-		perl -p -e 's/\$\(([A-Za-z_-]+)\)/$ENV{$1}/' | # expand other vars
-		sed 's/^ *//' |                   # remove leading whitespace
-		sed 's/ *$//')                    # remove trailing whitespace
+		perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|' | # expand other vars
+		sed 's|^ *||' |                   # remove leading whitespace
+		sed 's| *$||')                    # remove trailing whitespace
 	local path="$trimmed"
 	case "$path" in
 	    /*) ;;
@@ -58,8 +58,8 @@ expand_arg() {
 get_outfile() {
     local arg="$1"
     case "$arg" in
-	*.sml) basename "$arg" .sml ;;
-	*.mlb) basename "$arg" .mlb ;;
+	*.sml) echo $(dirname "$arg")/$(basename "$arg" .sml) ;;
+	*.mlb) echo $(dirname "$arg")/$(basename "$arg" .mlb) ;;
 	*) echo "*** Error: .sml or .mlb file must be provided" 1>&2
 	   exit 1 ;;
     esac
