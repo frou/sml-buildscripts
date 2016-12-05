@@ -10,28 +10,54 @@ else
     exit 1
 fi
 
+verbose=no
+if [ "$1" = "-v" ]; then
+    verbose=yes
+    shift
+fi
+
+
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 file.sml" 1>&2
-    echo "       $0 file.mlb" 1>&2
+    echo "Usage: $0 [-v] file.sml" 1>&2
+    echo "       $0 [-v] file.mlb" 1>&2
+    echo " where" 1>&2
+    echo "   -v: Do not suppress output from interactive environment" 1>&2
     exit 1
 fi
 
+shift
 set -u
 
 mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 out=$(get_outfile "$arg")
+tmpout=$(get_tmpsmlfile "$arg")
 
-tmpout="/tmp/out.$out.$$.sml"
 trap "rm -f ${tmpout}" 0
 
-expand_arg "$arg" | \
-    sed 's/^\(.*\)$/use "\1";/' |              # wrap filenames in REPL use calls
-    (
-	cat <<EOF
+case "$verbose" in
+    yes)
+        expand_arg "$arg" | \
+            sed 's/^\(.*\)$/use "\1";/' |       # wrap filenames in REPL use calls
+            (
+	        cat -
+	        cat <<EOF
+val _ = main ();
+val _ = OS.Process.exit (OS.Process.success);
+EOF
+            ) > "$tmpout"
+
+        sml "$tmpout" "$@"
+        ;;
+
+    no)
+        expand_arg "$arg" | \
+            sed 's/^\(.*\)$/use "\1";/' |       # wrap filenames in REPL use calls
+            (
+	        cat <<EOF
 val smlrun__cp = 
     let val x = !Control.Print.out in
         Control.Print.out := { say = fn _ => (), flush = fn () => () };
@@ -48,14 +74,16 @@ Control.Print.out := {
     flush = fn s => ()
 };
 EOF
-	cat -
-	cat <<EOF
+	        cat -
+	        cat <<EOF
 
 val _ = main ();
 val _ = OS.Process.exit (OS.Process.success);
 EOF
-    ) > "$tmpout"
+            ) > "$tmpout"
 
-CM_VERBOSE=false sml "$tmpout" "$@"
+        CM_VERBOSE=false sml "$tmpout" "$@" | tail -n +3
+        ;;
+esac
 
 

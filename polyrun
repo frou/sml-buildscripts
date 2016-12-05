@@ -10,15 +10,15 @@ if [ -z "$arg" ]; then
     exit 1
 fi
 
+shift
 set -u
 
 mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 out=$(get_outfile "$arg")
-
-tmpobj="/tmp/obj.$$.o"
-tmpout="/tmp/out.$out.$$"
+tmpobj=$(get_tmpobjfile "$arg")
+tmpout=$(get_tmpfile "$arg")
 trap "rm -f ${tmpobj} ${tmpout}" 0
 
 ( expand_arg "$arg" | \

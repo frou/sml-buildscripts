@@ -55,13 +55,34 @@ expand_arg() {
     esac
 }
 
-get_outfile() {
+get_base() {
     local arg="$1"
     case "$arg" in
-	*.sml) echo $(dirname "$arg")/$(basename "$arg" .sml) ;;
-	*.mlb) echo $(dirname "$arg")/$(basename "$arg" .mlb) ;;
+	*.sml) basename "$arg" .sml ;;
+	*.mlb) basename "$arg" .mlb ;;
 	*) echo "*** Error: .sml or .mlb file must be provided" 1>&2
 	   exit 1 ;;
     esac
+}    
+
+get_outfile() {
+    local arg="$1"
+    echo $(dirname "$arg")/$(get_base "$arg")
 }
+
+get_tmpfile() {
+    local arg="$1"
+    mktemp /tmp/smlbuild-$(get_base "$arg")-XXXXXXXX
+}
+
+get_tmpsmlfile() {
+    local arg="$1"
+    mktemp /tmp/smlbuild-$(get_base "$arg")-XXXXXXXX.sml
+}
+
+get_tmpobjfile() {
+    local arg="$1"
+    mktemp /tmp/smlbuild-$(get_base "$arg")-XXXXXXXX.o
+}
+
 

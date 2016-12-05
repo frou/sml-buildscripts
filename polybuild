@@ -10,19 +10,20 @@ if [ -z "$arg" ]; then
     exit 1
 fi
 
+shift
 set -u
 
 mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 out=$(get_outfile "$arg")
+tmpobj=$(get_tmpobjfile "$arg")
 
-obj="/tmp/obj.$$.o"
-trap "rm -f ${obj}" 0
+trap "rm -f ${tmpobj}" 0
 
 ( expand_arg "$arg" |
 	sed 's|^\(.*\)$|use "\1";|' ;            # wrap filenames in REPL use calls
-  echo 'PolyML.export("'"$obj"'", main);' ) |    # ask poly to export object file
+  echo 'PolyML.export("'"$tmpobj"'", main);' ) | # ask poly to export object file
     poly -q --error-exit &&
-    polyc -o "$out" "$obj"                       # compile object to executable
+    polyc -o "$out" "$tmpobj"                    # compile object to executable
 
