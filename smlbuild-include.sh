@@ -1,5 +1,7 @@
 #!/bin/bash
 
+debug=no
+
 if [ -z "${SML_LIB:-}" ]; then
     lib=/usr/lib/mlton/sml
     if [ ! -d "$lib" ]; then
@@ -10,7 +12,11 @@ else
 fi
 
 simplify() {
-    sed -e 's|^./||' -e 's|[^/][^/]*/../||g' -e 's|//|/|g'
+    simple=$(sed -e 's|^./||' -e 's|[^/][^/]*/../||g' -e 's|//|/|g')
+    if [ "$debug" = "yes" ]; then
+	echo "$simple" 1>&2
+    fi
+    echo "$simple"
 }
 
 cat_mlb() {
@@ -20,6 +26,9 @@ cat_mlb() {
 	exit 1
     fi
     local dir=$(dirname "$mlb");
+    if [ "$debug" = "yes" ]; then
+	echo "$mlb:" 1>&2
+    fi
     cat "$mlb" | while read line; do
 	local trimmed=$(
 	    echo "$line" | 
