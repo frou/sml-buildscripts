@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/bash 
 
 usage () {
     echo
-    echo "Usage: $0 program.mlb" 1>&2
-    echo "         prints coverage summary for running program.mlb" 1>&2
-    echo "       $0 program.mlb file.sml" 1>&2
+    echo "Usage: $0 program.mlb [args...]" 1>&2
+    echo "         prints coverage summary for running program.mlb with args" 1>&2
+    echo "       $0 -f file.sml program.mlb [args...]" 1>&2
     echo "         prints detailed coverage for file.sml in program.mlb" 1>&2
     echo
     echo "If the args are followed by a double-dash (\"--\"), all subsequent" 1>&2
@@ -19,14 +19,19 @@ usage () {
 }
 
 mlb="$1"; shift
-
 srcfile=""
-if [ "$1" != "--" ]; then
+if [ "$mlb" = "-f" ]; then
     srcfile="$1"; shift
+    mlb="$1"; shift
 fi
 
 declare -a mlton_args
 declare -a object_args
+declare -a program_args
+while [ "$#" -gt 0 -a "$1" != "--" ]; do
+    program_args[${#program_args[@]}]="$1"
+    shift
+done
 if [ "$1" = "--" ]; then
     shift
     while [ "$#" -gt 0 -a "$1" != "--" ]; do
@@ -40,8 +45,6 @@ if [ "$1" = "--" ]; then
 	object_args[${#object_args[@]}]="$1"
 	shift
     done
-elif [ -n "$1" ]; then
-    usage
 fi
 
 if [ -z "$mlb" ]; then usage; fi
@@ -57,7 +60,7 @@ mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "
 
 set -u
 
-./"$PROGRAM" >/dev/null
+./"$PROGRAM" "${program_args[@]}" >/dev/null
 
 tmpfile=/tmp/"$$"_cov
 trap "rm -f $tmpfile" 0
@@ -76,8 +79,8 @@ trap "rm -f $tmpfile" 0
 # lines with a common filename and line.
 
 mlprof -raw true -show-line true "$PROGRAM" mlmon.out |
-    grep '/.*sml: [0-9]' |
-    sed 's|^.* \([a-z][a-z]*\)/|\1/|' |
+    grep '\.sml: [0-9]' |
+    sed 's|^.* \([A-Za-z][^ ]*\.sml\)|\1|' |
     sed 's|: | |' |
     awk '{ print $1","$2","$4 }' |
     sed 's|(0)|no|g' |
