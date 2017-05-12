@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e pipefail
 
 arg="$1"
 
@@ -14,6 +14,7 @@ shift
 set -u
 
 mydir=$(dirname "$0")
+
 . "$mydir/smlbuild-include.sh"
 
 out=$(get_outfile "$arg")

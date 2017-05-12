@@ -72,8 +72,8 @@ The PowerShell script "smlrun.ps1", for Windows, takes a .mlb file and
 runs it directly using the SML/NJ environment.
 
 
-Coverage
-========
+Code coverage
+=============
 
 The script "mlb-coverage" uses MLton's profile tool to print out line
 coverage reports for the files making up a program. Run

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Disable shellcheck warnings for useless-use-of-cat. UUOC is good
+# practice, not bad: clearer, safer, less error-prone.
+# shellcheck disable=SC2002
+
 debug=no
 
 if [ -z "${SML_LIB:-}" ]; then
@@ -25,12 +29,15 @@ cat_mlb() {
 	echo "*** Error: File not found: $mlb" 1>&2
 	exit 1
     fi
-    local dir=$(dirname "$mlb");
+    local dir
+    dir=$(dirname "$mlb")
     if [ "$debug" = "yes" ]; then
 	echo "$mlb:" 1>&2
     fi
-    cat "$mlb" | while read line; do
-	local trimmed=$(
+    cat "$mlb" | while read -r line; do
+	local trimmed
+	trimmed=$(
+	    # shellcheck disable=SC2016
 	    echo "$line" | 
 		sed 's|(\*.*\*)||' |              # remove ML-style comments
 		sed 's#$(SML_LIB)#'"${lib}"'#g' | # expand library path
