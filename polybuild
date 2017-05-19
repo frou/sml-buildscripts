@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e pipefail
+set -e
 
 arg="$1"
 
