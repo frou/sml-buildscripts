@@ -16,9 +16,13 @@ else
 fi
 
 simplify() {
-    simple=$(sed -e 's|^./||' -e 's|[^/][^/]*/../||g' -e 's|//|/|g')
+    simple=$(sed -e 's|^./||' -e 's|[^/.][^/.]*/\.\./||g' -e 's|//|/|g')
     if [ "$debug" = "yes" ]; then
 	echo "$simple" 1>&2
+    fi
+    if [ ! -f "$simple" ]; then
+	echo "*** Error: SML file not found: $simple" 1>&2
+        exit 1
     fi
     echo "$simple"
 }
@@ -26,7 +30,7 @@ simplify() {
 cat_mlb() {
     local mlb="$1"
     if [ ! -f "$mlb" ]; then
-	echo "*** Error: File not found: $mlb" 1>&2
+	echo "*** Error: MLB file not found: $mlb" 1>&2
 	exit 1
     fi
     local dir
@@ -57,6 +61,7 @@ cat_mlb() {
 	    *.mlb) cat_mlb "$path" ;;
 	    *.sml) echo "$path" | simplify ;;
 	    *.sig) echo "$path" | simplify ;;
+            *) echo "*** Warning: unsupported syntax or file in $mlb: $trimmed" 1>&2
 	esac
     done
 }
