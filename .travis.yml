@@ -19,7 +19,7 @@ addons:
       - polyml
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" = "osx" ]] ; then brew install mlton smlnj polyml ; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]] ; then brew install mlton smlnj polyml rlwrap ; fi
       
 script:
   - ./test/test.sh
