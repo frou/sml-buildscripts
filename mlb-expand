@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+arg="$1"
+
+if [ -z "$arg" ]; then
+    echo "Usage: $0 file.mlb" 1>&2
+fi
+
+set -u
+
+mydir=$(dirname "$0")
+. "$mydir/smlbuild-include.sh"
+
+base=$(get_outfile "$arg")
+
+expand_arg "$arg"
+
