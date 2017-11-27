@@ -123,4 +123,10 @@ $env:CM_VERBOSE="false"
 
 sml $tmpfile $args[1,$args.Length]
 
+if (-not $?) {
+    del $tmpfile
+    exit $LastExitCode
+}
+
 del $tmpfile
+
