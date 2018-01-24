@@ -1,20 +1,27 @@
 #!/bin/bash 
 
+logfile=mlb-coverage.log
+
 usage () {
-    echo
-    echo "Usage: $0 program.mlb [args...]" 1>&2
-    echo "         prints coverage summary for running program.mlb with args" 1>&2
-    echo "       $0 -f file.sml program.mlb [args...]" 1>&2
-    echo "         prints detailed coverage for file.sml in program.mlb" 1>&2
-    echo
-    echo "If the args are followed by a double-dash (\"--\"), all subsequent" 1>&2
-    echo "arguments will be passed to the MLton compiler. If a further \"--\"" 1>&2
-    echo "is found, arguments after that will be passed as object files to the" 1>&2
-    echo "MLton compiler (previous args will go before the .mlb argument)." 1>&2
-    echo
-    echo "e.g." 1>&2
-    echo "$(basename $0) test.mlb srcfile.sml -- -default-ann 'allowFFI true' -- export.o" 1>&2
-    echo 1>&2
+    cat 1>&2 <<EOF
+
+Usage: $(basename $0) program.mlb [args...]
+         prints coverage summary for running program.mlb with args
+       $(basename $0) -f file.sml program.mlb [args...]
+         prints detailed coverage for file.sml in program.mlb
+
+If the args are followed by a double-dash ("--"), all subsequent
+arguments will be passed to the MLton compiler. If a further "--"
+is found, arguments after that will be passed as object files to the
+MLton compiler (previous args will go before the .mlb argument).
+
+The program's standard output will be redirected to $logfile.
+This will silently clobber any existing content in that file.
+
+Example:
+$(basename $0) -f tricky.sml program.mlb data.txt -- -default-ann 'allowFFI true' -- export.o
+
+EOF
     exit 2
 }
 
@@ -49,18 +56,22 @@ fi
 
 if [ -z "$mlb" ]; then usage; fi
     
-set -e
+set -e 
 
 mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 PROGRAM=$(get_outfile "$mlb")
 
-mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "$PROGRAM.mlb" "${object_args[@]}"
-
 set -u
 
-./"$PROGRAM" "${program_args[@]}" >/dev/null
+mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "$PROGRAM.mlb" "${object_args[@]}"
+
+if ./"$PROGRAM" "${program_args[@]}" >"$logfile" ; then
+    echo "+++ Program completed: stdout is in $logfile"
+else
+    echo "--- Program returned exit code $?: stdout is in $logfile"
+fi
 
 tmpfile=/tmp/"$$"_cov
 trap "rm -f $tmpfile" 0
