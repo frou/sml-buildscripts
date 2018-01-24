@@ -65,6 +65,8 @@ PROGRAM=$(get_outfile "$mlb")
 
 set -u
 
+rm -f mlmon.out
+
 mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "$PROGRAM.mlb" "${object_args[@]}"
 
 if ./"$PROGRAM" "${program_args[@]}" >"$logfile" ; then
