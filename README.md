@@ -12,10 +12,10 @@ PowerShell script for Windows.
 Motivation and the polybuild script
 -----------------------------------
 
-The `.mlb` format is, approximately, a list of the input files that
-constitute a program. This format is associated with the MLton
-compiler, and a `.mlb` file can be compiled using MLton without any
-additional scripting:
+The `.mlb` file format (http://mlton.org/MLBasis) is, at its most
+basic, a list of the input files that constitute a program. This
+format is associated with the MLton compiler, and a `.mlb` file can be
+compiled using MLton without any additional scripting:
 
 ```
  $ mlton file.mlb
