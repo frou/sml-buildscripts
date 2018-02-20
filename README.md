@@ -39,20 +39,19 @@ native executable.
 Build-and-run and build-and-REPL scripts
 ----------------------------------------
 
-The script `polyrun` takes a `.mlb` file and runs it directly in the
-Poly/ML environment (rather than dumping out an executable as
-polybuild does).
+The script `polyrun` takes a `.mlb` file and runs it once immediately
+in the Poly/ML environment, instead of creating an executable file as
+polybuild does.
 
 The script `polyrepl` takes a `.mlb` file and loads it into the
-Poly/ML interactive environment or REPL, leaving you at the REPL
-prompt with your program's contents present in the current
-environment.
+Poly/ML interactive environment, leaving you at the interactive prompt
+with your program's contents present in the current environment.
 
-The script `smlrun` takes a `.mlb` file and runs it directly using the
-SML/NJ environment.
+The script `smlrun` takes a `.mlb` file and runs it immediately using
+the SML/NJ environment.
 
 The PowerShell script `smlrun.ps1`, for Windows, takes a `.mlb` file
-and runs it directly using the SML/NJ environment.
+and runs it immediately using the SML/NJ environment.
 
 
 Code coverage
