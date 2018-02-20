@@ -2,10 +2,11 @@
 SML build scripts
 ==================
 
-Scripts to compile and run Standard ML programs defined in .mlb files.
+A set of scripts to compile and run Standard ML programs defined in
+`.mlb` files.
 
 All of these are Bash scripts for Unix-like systems, apart from one
-PowerShell script for Windows (see below).
+PowerShell script for Windows.
 
 
 Motivation and the polybuild script
@@ -60,15 +61,19 @@ Code coverage
 The script `mlb-coverage` uses MLton's profile tool to print out line
 coverage reports for the files making up a program. Run
 
+```
  $ ./mlb-coverage file.mlb
+```
 
 to compile and print an overall coverage summary for the program
-defined in file.mlb, or
+defined in `file.mlb`, or
 
+```
  $ ./mlb-coverage file.mlb sourcefile.sml
+```
 
-to compile file.mlb and print detailed coverage for the single source
-file sourcefile.sml.
+to compile `file.mlb` and print detailed coverage for the single
+source file `sourcefile.sml`.
 
 
 Makefile dependency generation
@@ -127,11 +132,12 @@ code like
 val () = main ()
 ```
 
-and refer to it as the last item in your `.mlb` file, then MLton will
-treat this line of code as the entry point for the executable, while
-the `polybuild` script will remove it, leaving Poly/ML with the `main`
-function as its entry point as usual. So both will have the same
-effect in the end.
+and list that file as the last item in your `.mlb` file, then MLton
+will treat this line of code as the entry point for the executable,
+and so call `main ()` when the executable is run; while the
+`polybuild` script will remove this line, leaving Poly/ML simply
+calling `main` function as its entry point as usual. So both will have
+the same effect in the end.
 
 You will still run into differences if you have other top-level code
 with side-effects: best to avoid that if you can.
