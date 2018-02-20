@@ -50,6 +50,7 @@ cat_mlb() {
 		sed 's| *$||')                    # remove trailing whitespace
 	local path="$trimmed"
 	case "$path" in
+	    "") ;;		                  # keep empty lines for ignoring later
 	    /*) ;;
 	    *) path="$dir/$trimmed" ;;
 	esac
