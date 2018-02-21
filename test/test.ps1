@@ -1,6 +1,4 @@
 
-Set-StrictMode -Version 2.0
-
 $mydir = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 cd $mydir
