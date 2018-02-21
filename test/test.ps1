@@ -1,6 +1,5 @@
 
 Set-StrictMode -Version 2.0
-$ErrorActionPreference = "Stop"
 
 $mydir = Split-Path $MyInvocation.MyCommand.Path -Parent
 
