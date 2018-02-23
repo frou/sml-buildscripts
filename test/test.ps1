@@ -20,8 +20,6 @@ if (-not (Test-Path "fxp")) {
     "==> Checking out more complex test repo"
     ""
     cmd /c "git clone https://github.com/cannam/fxp 2>&1"
-    ""
-    "==> Done"
 }
 
 ""

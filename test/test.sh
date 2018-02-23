@@ -9,7 +9,17 @@ set -eu
 mydir=$(dirname "$0")
 cd "$mydir"
 
+
+echo
+echo "==> Running simplest example directly in Poly/ML"
+echo
+
+../../polyrun ./simple.mlb
+
+
 if [ ! -d fxp ]; then
+    echo "==> Checking out more complex test repo"
+    echo
     git clone https://github.com/cannam/fxp
 fi
 
