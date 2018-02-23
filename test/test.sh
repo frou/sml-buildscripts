@@ -14,7 +14,7 @@ echo
 echo "==> Running simplest example directly in Poly/ML"
 echo
 
-../../polyrun ./simple.mlb
+../polyrun ./simple.mlb
 
 
 if [ ! -d fxp ]; then
