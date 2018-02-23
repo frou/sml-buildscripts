@@ -47,7 +47,7 @@ cat_mlb() {
 		sed 's#$(SML_LIB)#'"${lib}"'#g' | # expand library path
 		perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|' | # expand other vars
 		sed 's|^ *||' |                   # remove leading whitespace
-		sed 's|[ \r]*$||')                    # remove trailing whitespace
+		sed 's|[[:space:]]*$||')          # remove trailing whitespace
 	local path="$trimmed"
 	case "$path" in
 	    "") ;;		                  # keep empty lines for ignoring later
