@@ -51,29 +51,37 @@ function script:processMLB($m) {
   # remove empty lines
   $lines = $lines -notmatch "^$"
 
+  # remove lines with double-quotes in them, e.g. annotation
+  $lines = $lines -notmatch """"
+
   $expanded = @()
 
   foreach ($line in $lines) {
 
-    if (!([System.IO.Path]::IsPathRooted($line))) {
+    $path = $line
+
+    if (!([System.IO.Path]::IsPathRooted($path))) {
       # resolve path relative to containing mlb file
-      $line = (Join-Path (Split-Path -parent $m) $line)
+      $path = (Join-Path (Split-Path -parent $m) $path)
     }
 
-    if ($line -match "[.]mlb$") {
+    if ($path -match "[.]mlb$") {
 
       # recurse to expand included mlb
-      $expanded += @(processMLB $line)
+      $expanded += @(processMLB $path)
       
-    } else {
+    } elseif ($path -match "[.](sml|sig)$") {
 
       # SML/NJ wants forward slashes for path separators
-      $line = $line -replace "\\","/";
+      $path = $path -replace "\\","/";
 
       # add use declaration
-      $line = $line -replace "^(.*)$",'use "$1";'
+      $path = $path -replace "^(.*)$",'use "$1";'
 
-      $expanded += $line
+      $expanded += $path
+
+    } else {
+      Write-Warning "*** Warning: unsupported syntax or file in ${m}: ${line}"
     }
   }
 
@@ -96,7 +104,7 @@ val smlrun__cp =
 val smlrun__prev = ref "";
 Control.Print.out := { 
     say = fn s => 
-        (if String.isSubstring "Error" s 
+        (if String.isSubstring " Error" s orelse String.isSubstring "failed: " s
          then (Control.Print.out := smlrun__cp;
                (#say smlrun__cp) (!smlrun__prev);
                (#say smlrun__cp) s)
@@ -121,7 +129,7 @@ $script | Out-File -Encoding "ASCII" $tmpfile
 
 $env:CM_VERBOSE="false"
 
-sml $tmpfile $args[1,$args.Length]
+$input | sml $tmpfile $args[1,$args.Length]
 
 if (-not $?) {
     del $tmpfile
