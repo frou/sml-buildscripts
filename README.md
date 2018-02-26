@@ -8,24 +8,44 @@ A set of scripts to compile and run Standard ML programs defined in
 All of these are Bash scripts for Unix-like systems, apart from one
 PowerShell script for Windows.
 
+[![Build Status](https://travis-ci.org/cannam/sml-buildscripts.svg?branch=master)](https://travis-ci.org/cannam/sml-buildscripts)
+[![Build status](https://ci.appveyor.com/api/projects/status/0tdilpimotvv71yp/branch/master?svg=true)](https://ci.appveyor.com/project/cannam/sml-buildscripts/branch/master)
 
-Motivation and the polybuild script
------------------------------------
+
+Motivation
+----------
 
 The `.mlb` file format (http://mlton.org/MLBasis) is, at its most
-basic, a list of the input files that constitute a program. This
-format is associated with the MLton compiler, and a `.mlb` file can be
-compiled using MLton without any additional scripting:
+basic, a list of the input files that constitute a Standard ML
+program. This appealingly simple format is supported by the
+[MLton](http://mlton.org) and [MLKit](http://www.elsman.com/mlkit/)
+compilers. A `.mlb` file can be compiled using either of these without
+any additional scripting:
 
 ```
- $ mlton file.mlb
+ $ mlton file.mlb     # compile with MLton
+ $ mlkit file.mlb     # or compile with MLKit
 ```
 
-But MLton is rather slow to run, for development use, and it's a good
-idea to test code with more than one compiler.
+But neither compiler is completely ideal on its own. MLton is slow to
+run, although it produces fast programs. MLKit runs faster but
+produces somewhat slower output. Neither of them is easy to use on
+Windows, and neither of them has an interactive environment.
 
-The script `polybuild` therefore takes a `.mlb` file and builds an
-executable from it using the Poly/ML compiler:
+It would be nice to be able to use the same input files with
+[Poly/ML](http://polyml.org/), which has an excellent balance between
+the speed of the compiler and of the generated code, or
+[SML/NJ](http://smlnj.org/). Both run on Windows as well as Linux and
+macOS, and provide interactive environments. But, as of 2018 and the
+Poly/ML 5.7 and SML/NJ v110.82 releases, neither of them supports
+`.mlb` files directly.
+
+
+The polybuild script
+--------------------
+
+The Bash script `polybuild` therefore takes a `.mlb` file and builds
+an executable from it using the Poly/ML compiler:
 
 ```
  $ polybuild file.mlb
@@ -39,16 +59,16 @@ native executable.
 Build-and-run and build-and-REPL scripts
 ----------------------------------------
 
-The script `polyrun` takes a `.mlb` file and runs it once immediately
-in the Poly/ML environment, instead of creating an executable file as
-polybuild does.
+The Bash script `polyrun` takes a `.mlb` file and runs it once
+immediately in the Poly/ML environment, instead of creating an
+executable file as polybuild does.
 
-The script `polyrepl` takes a `.mlb` file and loads it into the
+The Bash script `polyrepl` takes a `.mlb` file and loads it into the
 Poly/ML interactive environment, leaving you at the interactive prompt
 with your program's contents present in the current environment.
 
-The script `smlrun` takes a `.mlb` file and runs it immediately using
-the SML/NJ environment.
+The Bash script `smlrun` takes a `.mlb` file and runs it immediately
+using the SML/NJ environment.
 
 The PowerShell script `smlrun.ps1`, for Windows, takes a `.mlb` file
 and runs it immediately using the SML/NJ environment.
@@ -57,8 +77,8 @@ and runs it immediately using the SML/NJ environment.
 Code coverage
 -------------
 
-The script `mlb-coverage` uses MLton's profile tool to print out line
-coverage reports for the files making up a program. Run
+The Bash script `mlb-coverage` uses MLton's profile tool to print out
+line coverage reports for the files making up a program. Run
 
 ```
  $ ./mlb-coverage file.mlb
@@ -78,9 +98,9 @@ source file `sourcefile.sml`.
 Makefile dependency generation
 ------------------------------
 
-The script `mlb-dependencies` reads a `.mlb` file and prints to stdout
-a list of file dependencies in a format suitable to include in a
-Makefile.
+The Bash script `mlb-dependencies` reads a `.mlb` file and prints to
+stdout a list of file dependencies in a format suitable to include in
+a Makefile.
 
 
 MLB environments
@@ -141,8 +161,12 @@ the same effect in the end.
 You will still run into differences if you have other top-level code
 with side-effects: best to avoid that if you can.
 
-[![Build Status](https://travis-ci.org/cannam/sml-buildscripts.svg?branch=master)](https://travis-ci.org/cannam/sml-buildscripts)
-[![Build status](https://ci.appveyor.com/api/projects/status/0tdilpimotvv71yp/branch/master?svg=true)](https://ci.appveyor.com/project/cannam/sml-buildscripts/branch/master)
+
+Further notes
+-------------
+
+* [Standard ML and how I'm compiling it](https://thebreakfastpost.com/2015/06/10/standard-ml-and-how-im-compiling-it/) (precursor to this repo)
+* [SML and OCaml: So, why was the OCaml faster?](https://thebreakfastpost.com/2015/05/10/sml-and-ocaml-so-why-was-the-ocaml-faster/) (including a quick survey of SML compilers)
 
 
 Author, copyright, and licence
