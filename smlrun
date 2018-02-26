@@ -1,6 +1,8 @@
 #!/bin/bash
-
-# Run a program defined as an .mlb file using the SML/NJ repl
+#
+# smlrun - run a SML program defined in a MLB file using SML/NJ
+#
+# Chris Cannam, 2015-2018. MIT licence
 
 set -e
 

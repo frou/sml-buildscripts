@@ -141,6 +141,9 @@ the same effect in the end.
 You will still run into differences if you have other top-level code
 with side-effects: best to avoid that if you can.
 
+[![Build Status](https://travis-ci.org/cannam/sml-buildscripts.svg?branch=master)](https://travis-ci.org/cannam/sml-buildscripts)
+[![Build status](https://ci.appveyor.com/api/projects/status/0tdilpimotvv71yp/branch/master?svg=true)](https://ci.appveyor.com/project/cannam/sml-buildscripts/branch/master)
+
 
 Author, copyright, and licence
 ------------------------------

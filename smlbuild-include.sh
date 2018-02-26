@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Chris Cannam, 2015-2018. MIT licence
 
 # Disable shellcheck warnings for useless-use-of-cat. UUOC is good
 # practice, not bad: clearer, safer, less error-prone.

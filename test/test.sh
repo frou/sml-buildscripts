@@ -18,6 +18,7 @@ echo
 
 
 if [ ! -d fxp ]; then
+    echo
     echo "==> Checking out more complex test repo"
     echo
     git clone https://github.com/cannam/fxp
