@@ -99,8 +99,13 @@ echo
 echo "==> Running mlb-coverage single-file regression test"
 echo
 
-cat doc/fxp-xsa.xml | ../../mlb-coverage -f src/Parser/Parse/parseDocument.sml ./src/Apps/Canon/canon.mlb --validate=no > output.txt
-check_regression ../regression/annotate.txt output.txt
+# annoyingly, different greps seem to differ in how they handle
+# overlapping context so the results come out a bit different across
+# platforms. I can't easily see how to work around that one in the
+# coverage script, so let's do it here - hence the sort/uniq shuffle
+cat doc/fxp-xsa.xml | ../../mlb-coverage -f src/Parser/Parse/parseDocument.sml ./src/Apps/Canon/canon.mlb --validate=no | sort -n | uniq > output.txt
+cat ../regression/annotate.txt | sort -n | uniq > expected.txt
+check_regression expected.txt output.txt
 
 echo
 echo "==> Done"
