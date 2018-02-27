@@ -9,6 +9,16 @@ set -eu
 mydir=$(dirname "$0")
 cd "$mydir"
 
+check_regression() {
+    local expected="$1"
+    local actual="$2"
+    if ! cmp -s "$expected" "$actual" ; then
+        echo "*** ERROR: Output does not match expected: diff follows, expected first"
+        diff -u "$expected" "$actual"
+        exit 2
+    fi
+}
+
 
 echo
 echo "==> Running simplest example directly in Poly/ML"
@@ -22,9 +32,25 @@ if [ ! -d fxp ]; then
     echo "==> Checking out more complex test repo"
     echo
     git clone https://github.com/cannam/fxp
+    ( cd fxp ; git checkout 534f24d26695ef810d1b3c9e6d9f05a86c977217 )
 fi
 
+
 cd fxp
+
+echo
+echo "==> Running mlb-expand regression test"
+echo
+
+../../mlb-expand src/Apps/Canon/canon.mlb > output.txt
+check_regression ../regression/expand.txt output.txt
+
+echo
+echo "==> Running mlb-dependencies regression test"
+echo
+
+../../mlb-dependencies src/Apps/Canon/canon.mlb > output.txt
+check_regression ../regression/dependencies.txt output.txt
 
 echo
 echo "==> First testing MLB with MLton (for reference)"
@@ -61,6 +87,20 @@ echo "==> Running directly in SML/NJ (smlrun)"
 echo
 
 cat doc/fxp-xsa.xml | ../../smlrun src/Apps/Canon/canon.mlb --validate=no && echo
+
+echo
+echo "==> Running mlb-coverage all-files regression test"
+echo
+
+cat doc/fxp-xsa.xml | ../../mlb-coverage src/Apps/Canon/canon.mlb --validate=no > output.txt
+check_regression ../regression/coverage.txt output.txt
+
+echo
+echo "==> Running mlb-coverage single-file regression test"
+echo
+
+cat doc/fxp-xsa.xml | ../../mlb-coverage -f src/Parser/Parse/parseDocument.sml ./src/Apps/Canon/canon.mlb --validate=no > output.txt
+check_regression ../regression/annotate.txt output.txt
 
 echo
 echo "==> Done"

@@ -1,0 +1,176 @@
+     33	    | INSTANCE of int option
+     34
+ ### 35	   fun locOf wher =
+ ### 36	      case wher
+ ### 37		of PROLOG => LOC_PROLOG
+ ### 38		 | INSTANCE _ => LOC_PROLOG
+ ### 39		 | EPILOG => LOC_EPILOG
+     40
+     41	   fun checkRoot dtd (a,q) (doc,stag as ((_,elem,_,_,_),_)) =
+     42	      if !O_VALIDATE
+ ### 43		 then case doc
+ ### 44			of NONE => a
+     45			 | SOME doc =>
+ ### 46			   if doc=elem then a
+ ### 47			   else let val err = ERR_ROOT_ELEM(Index2Element dtd doc,
+     48							    Index2Element dtd elem)
+     49				in hookError(a,(getPos q,err))
+--
+     57		       case c
+     58			 of 0wx00            => (ws,(c,a,q))
+ ### 59			  | 0wx26 (* #"&" *) => (ws,(c,a,q))
+     60			  | 0wx3C (* #"<" *) => (ws,(c,a,q))
+ ### 61			  | 0wx09 (* #"t"*) => doit hadError (c::ws) (getChar(a,q))
+     62			  | 0wx0A (* #"n"*) => doit hadError (c::ws) (getChar(a,q))
+ ### 63			  | 0wx20 (* #" " *) => doit hadError (c::ws) (getChar(a,q))
+ ### 64			  | _ => let val a1 = if hadError then a
+ ### 65	                                      else hookError(a,(getPos q,ERR_FORBIDDEN_HERE
+     66	                                                        (IT_DATA nil,locOf wher)))
+     67	                         in doit true ws (getChar(a1,q))
+--
+     77		    case c
+     78		      of 0wx2D (* #"-" *) =>
+ ### 79			 let val (c1,a1,q1) = getChar(a,q)
+ ### 80			 in if c1=0wx2D then (wher,parseComment (getPos q0) (a1,q1))
+ ### 81			    else let val err = ERR_EXPECTED(expDash,[c1])
+ ### 82				     val a2 = hookError(a1,(getPos q1,err))
+ ### 83				     val caq2 = recoverDecl false (c1,a2,q1)
+     84				 in (wher,caq2)
+     85				 end
+     86			 end
+     87		       | 0wx5B (* #"[" *) =>
+ ### 88			 let
+ ### 89			    val err = ERR_FORBIDDEN_HERE (IT_CDATA,locOf wher)
+ ### 90			    val a1 = hookError(a,(getPos q0,err))
+ ### 91			    val caq2 = skipBadSection (getChar(a1,q))
+     92			 in (wher,caq2)
+     93			 end
+--
+     97			      (let val (name,(c1,a1,q1)) = parseName (c,a,q)
+     98				  handle NotFound (c,a,q) =>
+ ### 99				     let val err = expectedOrEnded(expDashDocLbrk,LOC_DECL) c
+     100				     in raise SyntaxError (c,hookError(a,(getPos q,err)),q)
+     101				     end
+--
+     103				   val _ = if name=[0wx44,0wx4f,0wx43,0wx54,0wx59,0wx50,0wx45]
+     104					   (* "DOCTYPE" *) then ()
+ ### 105					   else let val err = ERR_EXPECTED(expDashDocLbrk,name)
+ ### 106						    val a2 = hookError(a1,(getPos q,err))
+     107						in raise SyntaxError (c1,a2,q1)
+     108						end
+--
+     111			       in (INSTANCE doc,caq2)
+     112			       end
+ ### 113				  handle SyntaxError caq => (PROLOG,recoverDecl true caq))
+     114
+ ### 115			    | _ => let val loc = if wher=EPILOG then LOC_EPILOG else LOC_AFTER_DTD
+     116				       val err = ERR_FORBIDDEN_HERE (IT_DECL,loc)
+ ### 117				       val a1 = hookError(a,(getPos q0,err))
+ ### 118				       val caq2 = skipDecl true (c,a1,q)
+     119				   in (wher,caq2)
+     120				   end
+--
+     123		    case c
+     124		      of 0wx00 => if isSpecial q then (wher,(a,q))
+ ### 125				  else doit wher (getChar(a,q))
+     126		       (*--------------------------------------------------------------*)
+     127		       (* References are forbidden outside the document element        *)
+     128		       (*--------------------------------------------------------------*)
+     129		       | 0wx26 (* #"&" *) =>
+ ### 130		         let
+ ### 131			    val (c1,a1,q1) = getChar(a,q)
+     132			    val caq2 =
+ ### 133			       if c1=0wx23 (* #"#" *)
+ ### 134				  then let val err = ERR_FORBIDDEN_HERE(IT_CHAR_REF,locOf wher)
+ ### 135					   val a2 = hookError(a1,(getPos q,err))
+     136				       in skipCharRef (a2,q1)
+     137				       end
+ ### 138			       else let val err = ERR_FORBIDDEN_HERE(IT_REF,locOf wher)
+ ### 139					val a2 = hookError(a1,(getPos q,err))
+     140				    in skipReference (c1,a2,q1)
+     141				    end
+--
+     150				 end
+     151			       | 0wx2F (* #"/" *) =>
+ ### 152				 let
+ ### 153				    val err = ERR_FORBIDDEN_HERE(IT_ETAG,locOf wher)
+ ### 154				    val a2 = hookError(a1,(getPos q,err))
+ ### 155				    val caq3 = skipTag LOC_ETAG (a2,q1)
+     156				 in doit wher caq3
+     157				 end
+ ### 158			       | 0wx3F (* #"?" *) => doit wher (parseProcInstr (getPos q) (a1,q1))
+     159			       | _ =>
+     160				 if isName c1 then
+     161				    let val wher1 =
+     162				       case wher
+ ### 163					 of PROLOG => INSTANCE NONE
+     164					  | _ => wher
+     165				    in case wher1
+     166					 of PROLOG =>
+ ### 167					    raise InternalError(THIS_MODULE,"parseDoc.doit","")
+     168					  | EPILOG =>
+ ### 169					    let
+     170					       val err = ERR_FORBIDDEN_HERE(IT_STAG,LOC_EPILOG)
+ ### 171					       val a2 = hookError(a1,(getPos q,err))
+ ### 172					       val caq3 = skipTag LOC_STAG (a2,q1)
+     173					    in doit EPILOG caq3
+     174					    end
+--
+     177						val a2 =
+     178						   if not (!O_VALIDATE) orelse isSome doc then a1
+ ### 179						   else hookError(a1,(getPos q,ERR_NO_DTD))
+     180						val (stag,(c3,a3,q3)) = parseSTag
+     181						   dtd (getPos q) (c1,a2,q1)
+--
+     187						  of NONE => doit EPILOG (c5,a6,q5)
+     188						   | SOME (_,_,startPos,_) =>
+ ### 189						     let
+     190							val err = ERR_FORBIDDEN_HERE(IT_ETAG,LOC_EPILOG)
+ ### 191							val a7 = hookError(a6,(startPos,err))
+     192						     in doit EPILOG (c5,a7,q5)
+     193						     end
+     194					     end
+ ### 195						handle SyntaxError caq => doit wher1 caq)
+     196				    end
+ ### 197				 else let val err = ERR_FORBIDDEN_HERE(IT_CHAR 0wx3C,locOf wher)
+ ### 198					  val a2 = hookError(a1,(getPos q,err))
+     199				      in doit wher (c1,a2,q1)
+     200						  end
+--
+     214	      let
+     215		 val dtd = case dtdOpt
+ ### 216			     of NONE => initDtdTables ()
+     217			      | SOME dtd => dtd
+     218		 val (enc,xmlDecl,(c1,a1,q1)) = openDocument uriOpt a
+--
+     220		 val alone = case xmlDecl
+     221			       of (SOME(_,_,SOME sa)) => sa
+ ### 222				| _ => false
+     223		 val _ = if alone then setStandAlone dtd true else ()
+     224		 val a2 = hookXml(a1,(uri,enc,xmlDecl))
+--
+     227		     val version = case xmlDecl
+     228		       of (SOME(SOME ver,_,_)) => ver
+ ### 229		     | _ => "1.0"
+     230		     val getCharOld = !getCharRef
+     231		     val isNmsOld = !isNmsRef
+--
+     234		     val _ = if version="1.0" then ()
+     235			     else
+ ### 236			       let
+ ### 237				 val _ = getCharRef := getChar11
+ ### 238				 val _ = isNmsRef := isNms11
+ ### 239				 val _ = isNameRef := isName11
+ ### 240				 val _ = isXmlRef := isXml11
+     241			       in
+     242				 ()
+--
+     253		 val a4 = case wher
+     254			    of EPILOG => a3
+ ### 255			     | _ => hookError(a3,(getPos q3,ERR_ENDED_IN_PROLOG))
+     256	      in hookFinish a4
+     257	      end
+     258	   handle CantOpenFile(fmsg,a) =>
+ ### 259	      let val a1 = hookError(a,(nullPosition,ERR_NO_SUCH_FILE fmsg))
+     260	      in hookFinish a1
+     261	      end

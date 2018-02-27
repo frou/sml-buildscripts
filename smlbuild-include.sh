@@ -17,8 +17,19 @@ else
     lib="$SML_LIB"
 fi
 
+canonicalise() {
+    local pre="$1"
+    local post=""
+    while [ "$pre" != "$post" ]; do
+        if [ -z "$post" ]; then post="$pre"; else pre="$post"; fi
+        post=$(echo "$post" | sed -e 's|[^/]*/\.\./||g' -e 's|^./||' -e 's|//|/|g')
+    done
+    echo "$post"
+}
+
 simplify() {
-    simple=$(sed -e 's|^./||' -e 's|[^/.][^/.]*/\.\./||g' -e 's|//|/|g')
+    local path="$1"
+    simple=$(canonicalise "$path")
     if [ "$debug" = "yes" ]; then
 	echo "$simple" 1>&2
     fi
@@ -30,7 +41,7 @@ simplify() {
 }
 
 cat_mlb() {
-    local mlb="$1"
+    local mlb=$(simplify "$1")
     if [ ! -f "$mlb" ]; then
 	echo "*** Error: MLB file not found: $mlb" 1>&2
 	exit 1
@@ -62,8 +73,8 @@ cat_mlb() {
 	    *mlton.mlb) ;;			  # remove incompatible MLton lib
 	    *main.sml) ;;			  # remove redundant call to main
 	    *.mlb) cat_mlb "$path" ;;
-	    *.sml) echo "$path" | simplify ;;
-	    *.sig) echo "$path" | simplify ;;
+	    *.sml) simplify "$path" ;;
+	    *.sig) simplify "$path" ;;
             *) echo "*** Warning: unsupported syntax or file in $mlb: $trimmed" 1>&2
 	esac
     done
@@ -91,7 +102,7 @@ get_base() {
 
 get_outfile() {
     local arg="$1"
-    echo $(dirname "$arg")/$(get_base "$arg")
+    canonicalise $(dirname "$arg")/$(get_base "$arg")
 }
 
 get_tmpfile() {
