@@ -41,23 +41,19 @@ Poly/ML 5.7 and SML/NJ v110.82 releases, neither of them supports
 `.mlb` files directly.
 
 
-The polybuild script
---------------------
+Build, run, and REPL scripts
+----------------------------
 
-The Bash script `polybuild` therefore takes a `.mlb` file and builds
-an executable from it using the Poly/ML compiler:
+The Bash script `polybuild` takes a `.mlb` file and builds an
+executable from it using the Poly/ML compiler:
 
 ```
  $ polybuild file.mlb
  $ ./file
 ```
 
-which compiles much faster and still produces a reasonably quick
-native executable.
-
-
-Build-and-run and build-and-REPL scripts
-----------------------------------------
+This compiles much faster than MLton and still produces a reasonably
+quick native executable.
 
 The Bash script `polyrun` takes a `.mlb` file and runs it once
 immediately in the Poly/ML environment, instead of creating an
@@ -88,7 +84,7 @@ to compile and print an overall coverage summary for the program
 defined in `file.mlb`, or
 
 ```
- $ ./mlb-coverage file.mlb sourcefile.sml
+ $ ./mlb-coverage -f sourcefile file.mlb
 ```
 
 to compile `file.mlb` and print detailed coverage for the single
