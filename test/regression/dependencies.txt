@@ -1,10 +1,17 @@
-src/Apps/Canon/canon: src/config.sml src/Util/utilCompare.sml
-src/Apps/Canon/canon: src/Util/utilString.sml src/Util/utilError.sml
-src/Apps/Canon/canon: src/Util/utilHash.sml src/Util/utilInt.sml
-src/Apps/Canon/canon: src/Util/utilList.sml src/Util/utilTime.sml
-src/Apps/Canon/canon: src/Util/intLists.sml src/Util/intSets.sml
-src/Apps/Canon/canon: src/Util/options.sml src/Util/SymDict/key.sml
-src/Apps/Canon/canon: src/Util/SymDict/dict.sml src/Util/SymDict/symbolTable.sml
+src/Apps/Canon/canon: src/config.sml
+src/Apps/Canon/canon: src/Util/utilCompare.sml
+src/Apps/Canon/canon: src/Util/utilString.sml
+src/Apps/Canon/canon: src/Util/utilError.sml
+src/Apps/Canon/canon: src/Util/utilHash.sml
+src/Apps/Canon/canon: src/Util/utilInt.sml
+src/Apps/Canon/canon: src/Util/utilList.sml
+src/Apps/Canon/canon: src/Util/utilTime.sml
+src/Apps/Canon/canon: src/Util/intLists.sml
+src/Apps/Canon/canon: src/Util/intSets.sml
+src/Apps/Canon/canon: src/Util/options.sml
+src/Apps/Canon/canon: src/Util/SymDict/key.sml
+src/Apps/Canon/canon: src/Util/SymDict/dict.sml
+src/Apps/Canon/canon: src/Util/SymDict/symbolTable.sml
 src/Apps/Canon/canon: src/Util/SymDict/intSetDict.sml
 src/Apps/Canon/canon: src/Util/SymDict/intDict.sml
 src/Apps/Canon/canon: src/Util/SymDict/intListDict.sml
@@ -16,9 +23,12 @@ src/Apps/Canon/canon: src/Unicode/Chars/dataDict.sml
 src/Apps/Canon/canon: src/Unicode/Chars/uniRanges.sml
 src/Apps/Canon/canon: src/Unicode/Chars/uniClasses.sml
 src/Apps/Canon/canon: src/Unicode/Chars/testClasses.sml
-src/Apps/Canon/canon: src/Unicode/Uri/uriDecode.sml src/Unicode/Uri/uriEncode.sml
-src/Apps/Canon/canon: src/Unicode/Uri/uri.sml src/Unicode/Uri/uriDict.sml
-src/Apps/Canon/canon: src/Unicode/encoding.sml src/Unicode/Encode/encodeBasic.sml
+src/Apps/Canon/canon: src/Unicode/Uri/uriDecode.sml
+src/Apps/Canon/canon: src/Unicode/Uri/uriEncode.sml
+src/Apps/Canon/canon: src/Unicode/Uri/uri.sml
+src/Apps/Canon/canon: src/Unicode/Uri/uriDict.sml
+src/Apps/Canon/canon: src/Unicode/encoding.sml
+src/Apps/Canon/canon: src/Unicode/Encode/encodeBasic.sml
 src/Apps/Canon/canon: src/Unicode/Encode/encodeError.sml
 src/Apps/Canon/canon: src/Unicode/Encode/encodeMisc.sml
 src/Apps/Canon/canon: src/Unicode/Encode/encode.sml
@@ -30,23 +40,33 @@ src/Apps/Canon/canon: src/Unicode/Decode/decodeUcs2.sml
 src/Apps/Canon/canon: src/Unicode/Decode/decodeUcs4.sml
 src/Apps/Canon/canon: src/Unicode/Decode/decodeUtf16.sml
 src/Apps/Canon/canon: src/Unicode/Decode/decodeUtf8.sml
-src/Apps/Canon/canon: src/Unicode/Decode/decode.sml src/Parser/version.sml
-src/Apps/Canon/canon: src/Parser/Dfa/dfaData.sml src/Parser/Dfa/dfaError.sml
-src/Apps/Canon/canon: src/Parser/Dfa/dfaOptions.sml src/Parser/Dfa/dfaUtil.sml
-src/Apps/Canon/canon: src/Parser/Dfa/dfaPassOne.sml src/Parser/Dfa/dfaPassTwo.sml
+src/Apps/Canon/canon: src/Unicode/Decode/decode.sml
+src/Apps/Canon/canon: src/Parser/version.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaData.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaError.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaOptions.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaUtil.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaPassOne.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaPassTwo.sml
 src/Apps/Canon/canon: src/Parser/Dfa/dfaPassThree.sml
-src/Apps/Canon/canon: src/Parser/Dfa/dfaString.sml src/Parser/Dfa/dfa.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfaString.sml
+src/Apps/Canon/canon: src/Parser/Dfa/dfa.sml
 src/Apps/Canon/canon: src/Parser/Error/errorData.sml
 src/Apps/Canon/canon: src/Parser/Error/errorString.sml
 src/Apps/Canon/canon: src/Parser/Error/errorMessage.sml
 src/Apps/Canon/canon: src/Parser/Error/errorUtil.sml
 src/Apps/Canon/canon: src/Parser/Error/expected.sml
-src/Apps/Canon/canon: src/Parser/Error/errors.sml src/Parser/Base/baseData.sml
-src/Apps/Canon/canon: src/Parser/Base/baseString.sml src/Parser/Base/base.sml
-src/Apps/Canon/canon: src/Parser/Params/dtd.sml src/Parser/Params/hookData.sml
-src/Apps/Canon/canon: src/Parser/Params/hooks.sml src/Parser/Params/ignore.sml
+src/Apps/Canon/canon: src/Parser/Error/errors.sml
+src/Apps/Canon/canon: src/Parser/Base/baseData.sml
+src/Apps/Canon/canon: src/Parser/Base/baseString.sml
+src/Apps/Canon/canon: src/Parser/Base/base.sml
+src/Apps/Canon/canon: src/Parser/Params/dtd.sml
+src/Apps/Canon/canon: src/Parser/Params/hookData.sml
+src/Apps/Canon/canon: src/Parser/Params/hooks.sml
+src/Apps/Canon/canon: src/Parser/Params/ignore.sml
 src/Apps/Canon/canon: src/Parser/Params/parserOptions.sml
-src/Apps/Canon/canon: src/Parser/Params/resolve.sml src/Parser/entities.sml
+src/Apps/Canon/canon: src/Parser/Params/resolve.sml
+src/Apps/Canon/canon: src/Parser/entities.sml
 src/Apps/Canon/canon: src/Parser/Dtd/dtdDeclare.sml
 src/Apps/Canon/canon: src/Parser/Dtd/dtdAttributes.sml
 src/Apps/Canon/canon: src/Parser/Dtd/dtdManager.sml
@@ -60,13 +80,21 @@ src/Apps/Canon/canon: src/Parser/Parse/parseTags.sml
 src/Apps/Canon/canon: src/Parser/Parse/parseDecl.sml
 src/Apps/Canon/canon: src/Parser/Parse/parseDtd.sml
 src/Apps/Canon/canon: src/Parser/Parse/parseContent.sml
-src/Apps/Canon/canon: src/Parser/Parse/parseDocument.sml src/Catalog/catData.sml
-src/Apps/Canon/canon: src/Catalog/catDtd.sml src/Catalog/catError.sml
-src/Apps/Canon/canon: src/Catalog/catParams.sml src/Catalog/catFile.sml
-src/Apps/Canon/canon: src/Catalog/catHooks.sml src/Catalog/catOptions.sml
-src/Apps/Canon/canon: src/Catalog/socatParse.sml src/Catalog/catParse.sml
-src/Apps/Canon/canon: src/Catalog/catalog.sml src/Catalog/catResolve.sml
-src/Apps/Canon/canon: src/genRandom.sml src/Apps/Canon/canonOptions.sml
+src/Apps/Canon/canon: src/Parser/Parse/parseDocument.sml
+src/Apps/Canon/canon: src/Catalog/catData.sml
+src/Apps/Canon/canon: src/Catalog/catDtd.sml
+src/Apps/Canon/canon: src/Catalog/catError.sml
+src/Apps/Canon/canon: src/Catalog/catParams.sml
+src/Apps/Canon/canon: src/Catalog/catFile.sml
+src/Apps/Canon/canon: src/Catalog/catHooks.sml
+src/Apps/Canon/canon: src/Catalog/catOptions.sml
+src/Apps/Canon/canon: src/Catalog/socatParse.sml
+src/Apps/Canon/canon: src/Catalog/catParse.sml
+src/Apps/Canon/canon: src/Catalog/catalog.sml
+src/Apps/Canon/canon: src/Catalog/catResolve.sml
+src/Apps/Canon/canon: src/genRandom.sml
+src/Apps/Canon/canon: src/Apps/Canon/canonOptions.sml
 src/Apps/Canon/canon: src/Apps/Canon/canonEncode.sml
 src/Apps/Canon/canon: src/Apps/Canon/canonOutput.sml
-src/Apps/Canon/canon: src/Apps/Canon/canonHooks.sml src/Apps/Canon/canon.sml
+src/Apps/Canon/canon: src/Apps/Canon/canonHooks.sml
+src/Apps/Canon/canon: src/Apps/Canon/canon.sml
