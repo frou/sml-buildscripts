@@ -24,5 +24,25 @@ base=$(get_outfile "$arg")
 
 deps="$base".deps
 
-expand_arg "$arg" | fmt -60 | sed 's|^|'"$base"': |'
+format() {
+    # Very annoying -- I want to run e.g. "fmt -60" to word-wrap at 60
+    # chars, but fmt is too sophisticated for that. It has a goal
+    # column as well as a maximum column, and the means for setting
+    # the goal width differ between BSD (Mac) and GNU tools. On BSD,
+    # when you set a width explicitly, the goal width is set to the
+    # same. With current GNU tools, the goal defaults to 93% of the
+    # set width. So if you set only the width, you get different
+    # results across platforms and your regression tests fail. Here we
+    # test whether the goal-setting arg is supported (GNU) and fall
+    # back to setting only width (BSD) if not.
+    width="$1"
+    if echo x | fmt -w 10 -g 10 >/dev/null 2>&1 ; then
+        echo "GNU" 1>&2
+        fmt -g "$width" -w "$width"
+    else
+        fmt -w "$width"
+    fi
+}
+
+expand_arg "$arg" | format 60 | sed 's|^|'"$base"': |'
 
