@@ -22,9 +22,9 @@ canonicalise() {
     local post=""
     while [ "$pre" != "$post" ]; do
         if [ -z "$post" ]; then post="$pre"; else pre="$post"; fi
-        post=$(echo "$post" | sed -e 's|[^/]*/\.\./||g' -e 's|^./||' -e 's|//|/|g')
+        post=$(echo "$post" | sed -e 's|[^/]*/\.\./||g')
     done
-    echo "$post"
+    echo "$post" | sed -e 's|^./||' -e 's|//|/|g'
 }
 
 simplify() {
