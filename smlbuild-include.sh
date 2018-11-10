@@ -22,7 +22,7 @@ canonicalise() {
     local post=""
     while [ "$pre" != "$post" ]; do
         if [ -z "$post" ]; then post="$pre"; else pre="$post"; fi
-        post=$(echo "$post" | sed -e 's|[^/]*/\.\./||g')
+        post=$(echo "$post" | sed -e 's|[^/.][^/.]*/\.\./||g')
     done
     echo "$post" | sed -e 's|^./||' -e 's|//|/|g'
 }
@@ -31,10 +31,10 @@ simplify() {
     local path="$1"
     simple=$(canonicalise "$path")
     if [ "$debug" = "yes" ]; then
-	echo "$simple" 1>&2
+	echo "simplified \"$path\" to \"$simple\"" 1>&2
     fi
     if [ ! -f "$simple" ]; then
-	echo "*** Error: SML file not found: $simple" 1>&2
+	echo "*** Error: input file \"$simple\" not found" 1>&2
         exit 1
     fi
     echo "$simple"
@@ -42,16 +42,16 @@ simplify() {
 
 cat_mlb() {
     local mlb=$(simplify "$1")
-    if [ ! -f "$mlb" ]; then
-	echo "*** Error: MLB file not found: $mlb" 1>&2
-	exit 1
-    fi
+    if [ ! -f "$mlb" ]; then exit 1; fi
     local dir
     dir=$(dirname "$mlb")
     if [ "$debug" = "yes" ]; then
-	echo "$mlb:" 1>&2
+	echo "reading MLB file \"$mlb\":" 1>&2
     fi
     cat "$mlb" | while read -r line; do
+        if [ "$debug" = "yes" ]; then
+	    echo "read line \"$line\":" 1>&2
+        fi
 	local trimmed
 	trimmed=$(
 	    # shellcheck disable=SC2016
@@ -78,6 +78,9 @@ cat_mlb() {
             *) echo "*** Warning: unsupported syntax or file in $mlb: $trimmed" 1>&2
 	esac
     done
+    if [ "$debug" = "yes" ]; then
+	echo "finished reading MLB file \"$mlb\"" 1>&2
+    fi
 }
 
 expand_arg() {
