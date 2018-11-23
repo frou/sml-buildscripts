@@ -6,6 +6,8 @@
 
 debug=no
 
+set -o pipefail
+
 if [ -z "${SML_LIB:-}" ]; then
     lib=/usr/lib/mlton/sml
     if [ ! -d "$lib" ]; then
