@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# mlb-dependencies - read a MLB file defining an SML program and print
+# out a dependency list in Makefile format
+#
+# Chris Cannam, 2015-2018. MIT licence
 
 set -e
 
@@ -19,5 +24,10 @@ base=$(get_outfile "$arg")
 
 deps="$base".deps
 
-expand_arg "$arg" | fmt -60 | sed 's|^|'"$base"': |'
+# I wanted to pipe this through fmt, but that turned out to produce
+# slightly different results between GNU and BSD (/ Mac) tools and
+# resolving the distinction (in order to keep regression tests passing
+# across platforms) was too much of a faff for a small aesthetic gain
+
+expand_arg "$arg" | sed 's|^|'"$base"': |'
 

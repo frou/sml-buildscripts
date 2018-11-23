@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# polyrepl - load a SML program defined in a MLB file into the Poly/ML
+# interactive environment
+#
+# Chris Cannam, 2015-2018. MIT licence
 
 set -e
 

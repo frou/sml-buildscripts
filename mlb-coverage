@@ -1,25 +1,37 @@
-#!/bin/bash 
+#!/bin/bash
+#
+# mlb-coverage - compile and run an SML program defined in a MLB file
+#                using MLton and print a code coverage report
+#
+# Chris Cannam, 2015-2018. MIT licence
 
 logfile=mlb-coverage.log
 
 usage () {
     cat 1>&2 <<EOF
 
-Usage: $(basename $0) program.mlb [args...]
-         prints coverage summary for running program.mlb with args
-       $(basename $0) -f file.sml program.mlb [args...]
-         prints detailed coverage for file.sml in program.mlb
+Usage:
+
+  $(basename $0) program.mlb [args...]
+    print coverage summary for running program.mlb with supplied args
+
+  $(basename $0) -f file.sml program.mlb [args...]
+    print annotation of only file.sml showing which lines were not executed
+
+The program's standard output will be redirected to $logfile.
+This will silently clobber any existing content in that file.
 
 If the args are followed by a double-dash ("--"), all subsequent
 arguments will be passed to the MLton compiler. If a further "--"
 is found, arguments after that will be passed as object files to the
 MLton compiler (previous args will go before the .mlb argument).
 
-The program's standard output will be redirected to $logfile.
-This will silently clobber any existing content in that file.
+This is likely to be a fragile script, dependent both on specific
+behaviour from MLton and its profiler and on specific shell features
+and supporting tools.
 
 Example:
-$(basename $0) -f tricky.sml program.mlb data.txt -- -default-ann 'allowFFI true' -- export.o
+$(basename $0) -f src/tricky.sml program.mlb data.txt -- -default-ann 'allowFFI true' -- export.o
 
 EOF
     exit 2
@@ -67,13 +79,22 @@ set -u
 
 rm -f mlmon.out
 
+echo "+++ Compiling program $PROGRAM.mlb..." 1>&2
+
+set +u # or else bash on osx erroneously (I think?) complains the arrays
+       # are undefined when they are simply empty
+
 mlton -profile count -profile-branch true -profile-val true "${mlton_args[@]}" "$PROGRAM.mlb" "${object_args[@]}"
 
+echo "+++ Executing program $PROGRAM..." 1>&2
+
 if ./"$PROGRAM" "${program_args[@]}" >"$logfile" ; then
-    echo "+++ Program completed: stdout is in $logfile"
+    echo "+++ Program completed: stdout is in $logfile" 1>&2
 else
-    echo "--- Program returned exit code $?: stdout is in $logfile"
+    echo "--- Program returned exit code $?: stdout is in $logfile" 1>&2
 fi
+
+set -u
 
 tmpfile=/tmp/"$$"_cov
 trap "rm -f $tmpfile" 0
@@ -102,9 +123,9 @@ mlprof -raw true -show-line true "$PROGRAM" mlmon.out |
     perl -e 'while (<>) { ($f, $n, $b) = split /,/; next if ($f eq $pf and $n eq $pn); print; $pf = $f; $pn = $n }' > "$tmpfile"
 
 summarise_for() {
-    what="$1"
-    yes=$(fgrep "$what" "$tmpfile" | grep ",yes$" | wc -l)
-    no=$(fgrep "$what" "$tmpfile" | grep ",no$" | wc -l)
+    what=$(canonicalise "$1")
+    yes=$(fgrep "$what" "$tmpfile" | grep ",yes$" | wc -l | sed 's/ //g')
+    no=$(fgrep "$what" "$tmpfile" | grep ",no$" | wc -l | sed 's/ //g')
     total=$(($yes + $no))
     if [ "$total" = "0" ]; then
 	echo "  --%  $what (0/0)"
@@ -123,7 +144,7 @@ summarise_for() {
 if [ "$srcfile" = "" ]; then
 
     summarise_for "sml"
-    expand_arg "$mlb" | grep -v '^/' | grep -v '\.sig$' | sort |
+    expand_arg "$mlb" | grep -v '^/' | grep -v '\.sig$' | LANG=C LC_ALL=C sort |
 	while read x; do
 	    summarise_for "$x" ;
 	done
