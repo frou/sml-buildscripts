@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# smlrepl - load a SML program defined in a MLB file into the SML/NJ
+# interactive environment
+#
+# Chris Cannam, 2015-2018. MIT licence
+
+set -e
+
+if echo | sml | grep -q Jersey ; then :
+else
+    echo "*** Error: SML/NJ binary 'sml' not in path" 1>&2
+    exit 1
+fi
+
+arg="$1"
+
+if [ -z "$arg" ]; then
+    echo "Usage: $0 [-v] file.sml" 1>&2
+    echo "       $0 [-v] file.mlb" 1>&2
+    echo " where" 1>&2
+    exit 1
+fi
+
+shift
+set -u
+
+mydir=$(dirname "$0")
+. "$mydir/smlbuild-include.sh"
+
+out=$(get_outfile "$arg")
+tmpout=$(get_tmpsmlfile "$arg")
+
+trap "rm -f ${tmpout}" 0
+
+expand_arg "$arg" | \
+    sed 's/^\(.*\)$/use "\1";/' > \
+        "$tmpout"
+
+rlwrap sml "$tmpout" "$@"
+
