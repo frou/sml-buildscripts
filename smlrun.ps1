@@ -131,7 +131,7 @@ $script | Out-File -Encoding "ASCII" $tmpfile
 
 $env:CM_VERBOSE="false"
 
-$input | sml $tmpfile $args[1,$args.Length]
+$input | sml $tmpfile $args[1..$args.Length]
 
 if (-not $?) {
     del $tmpfile
