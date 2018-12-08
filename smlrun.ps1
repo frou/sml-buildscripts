@@ -61,8 +61,10 @@ function script:processMLB($m) {
     $path = $line
 
     if (!([System.IO.Path]::IsPathRooted($path))) {
-      # resolve path relative to containing mlb file
-      $path = (Join-Path (Split-Path -parent $m) $path)
+      if (Split-Path -parent $m) {
+        # resolve path relative to containing mlb file
+        $path = (Join-Path (Split-Path -parent $m) $path)
+      }
     }
 
     if ($path -match "[.]mlb$") {
