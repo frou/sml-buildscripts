@@ -22,8 +22,6 @@ mydir=$(dirname "$0")
 
 base=$(get_outfile "$arg")
 
-deps="$base".deps
-
 # I wanted to pipe this through fmt, but that turned out to produce
 # slightly different results between GNU and BSD (/ Mac) tools and
 # resolving the distinction (in order to keep regression tests passing

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# polyrun - run a SML program defined in a MLB file using Poly/ML
+# polyrun - run a SML program defined in a SML or MLB file using Poly/ML
 #
 # Chris Cannam, 2015-2018. MIT licence
 
