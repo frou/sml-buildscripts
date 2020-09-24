@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# with-mlb-dependencies - run a (presumed) compiler command, while also
+# dumping out a dependency file. Intended for Meson build integration.
+#
+# Chris Cannam, 2020. MIT licence
+
+set -e
+
+if [ -z "$1" ]; then
+    myname=$(basename "$0")
+    echo 1>&2
+    echo "Usage: $myname <buildcommand> <buildargs>" 1>&2
+    echo 1>&2
+    echo "First runs the supplied build command with the supplied build arguments;" 1>&2
+    echo "then scans the build arguments, locating the first argument that names an .mlb" 1>&2
+    echo "or .sml file, and writes out the dependency list for that file to a" 1>&2
+    echo "similarly-named .deps file in the same location." 1>&2
+    echo 1>&2
+    echo "Example: $myname mlton program.mlb" 1>&2
+    echo 1>&2
+    echo "The above example runs mlton with the argument program.mlb; if that was" 1>&2
+    echo "successful, it then writes out a dependency file called program.deps," 1>&2
+    echo "containing a list of the input files which the target program depends on." 1>&2
+    echo 1>&2
+    exit 2
+fi
+
+set -u
+
+mydir=$(dirname "$0")
+. "$mydir/smlbuild-include.sh"
+
+arg=""
+for x in "$@" ; do
+    case "$x" in
+        *.mlb) arg="$x";;
+        *.sml) arg="$x";;
+        *) ;;
+    esac
+    if [ -n "$arg" ]; then
+        break
+    fi
+done
+
+"$@" || exit 1
+
+base=$(get_outfile "$arg")
+
+deps="$base".deps
+
+shift
+
+expand_arg "$arg" > "$deps"
+
