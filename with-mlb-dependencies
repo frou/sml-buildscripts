@@ -21,8 +21,11 @@ if [ -z "$1" ]; then
     echo 1>&2
     echo "The above example runs mlton with the argument program.mlb; if that was" 1>&2
     echo "successful, it then writes out a dependency file called program.deps," 1>&2
-    echo "containing a list of the input files which the target program depends on." 1>&2
+    echo "containing a list of the input files which the target program depends on," 1>&2
+    echo "in Makefile dependency syntax." 1>&2
     echo 1>&2
+    echo "This program also looks for the -o, -output, and -mlb-path-var options in the" 1>&2
+    echo "build arguments and interprets them appropriately." 1>&2
     exit 2
 fi
 
@@ -32,24 +35,40 @@ mydir=$(dirname "$0")
 . "$mydir/smlbuild-include.sh"
 
 arg=""
+output=""
+env_args=
+expecting_pathvar=false
+expecting_output=false
 for x in "$@" ; do
-    case "$x" in
-        *.mlb) arg="$x";;
-        *.sml) arg="$x";;
-        *) ;;
-    esac
-    if [ -n "$arg" ]; then
-        break
+    if [ "$expecting_pathvar" = "true" ]; then
+        env_args="$env_args $(echo $x |sed 's/ /=/')"
+        expecting_pathvar=false
+    elif [ "$expecting_output" = "true" ]; then
+        output="$x"
+        expecting_output=false
+    else
+        case "$x" in
+            *.mlb) arg="$x";;
+            *.sml) arg="$x";;
+            -mlb-path-var) expecting_pathvar=true;;
+            -o) expecting_output=true;;
+            -output) expecting_output=true;;
+            *) ;;
+        esac
+        if [ -n "$arg" ]; then
+            break
+        fi
     fi
 done
 
 "$@" || exit 1
 
-base=$(get_outfile "$arg")
+if [ -z "$output" ]; then
+    output=$(get_outfile "$arg")
+fi
 
-deps="$base".deps
+deps="$output".deps
 
 shift
 
-expand_arg "$arg" > "$deps"
-
+env $env_args "$mydir/mlb-dependencies" "$arg" > "$deps"
