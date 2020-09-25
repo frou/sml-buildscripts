@@ -6,12 +6,24 @@
 
 set -e
 
+usage() {
+    me=$(basename "$0")
+    echo "Usage: $me [-o output] file.sml" 1>&2
+    echo "       $me [-o output] file.mlb" 1>&2
+    exit 1
+}
+
 arg="$1"
 
-if [ -z "$arg" ]; then
-    echo "Usage: $0 file.sml" 1>&2
-    echo "       $0 file.mlb" 1>&2
-    exit 1
+[ -n "$arg" ] || usage
+
+if [ t"$arg" = "t-o" ]; then
+    shift
+    out="$1"
+    [ -n "$out" ] || usage
+    shift
+    arg="$1"
+    [ -n "$arg" ] || usage
 fi
 
 shift
@@ -21,7 +33,10 @@ mydir=$(dirname "$0")
 
 . "$mydir/smlbuild-include.sh"
 
-out=$(get_outfile "$arg")
+if [ -z "$out" ]; then
+    out=$(get_outfile "$arg")
+fi
+
 tmpobj=$(get_tmpobjfile "$arg")
 
 trap "rm -f ${tmpobj}" 0
