@@ -17,6 +17,7 @@ arg="$1"
 
 [ -n "$arg" ] || usage
 
+out=""
 if [ t"$arg" = "t-o" ]; then
     shift
     out="$1"
