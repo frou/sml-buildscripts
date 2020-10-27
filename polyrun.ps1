@@ -10,6 +10,9 @@ Run the Standard ML program defined in example.mlb using Poly/ML, passing datafi
 
 #>
 
+Set-StrictMode -Version 2.0
+$ErrorActionPreference = "Stop"
+
 if ($args.Count -lt 1) {
   "Usage: polyrun file.mlb [args...]"
   exit 1

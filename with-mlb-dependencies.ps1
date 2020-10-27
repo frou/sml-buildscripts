@@ -1,0 +1,81 @@
+
+Set-StrictMode -Version 2.0
+$ErrorActionPreference = "Stop"
+
+if ($args.Count -lt 1) {
+  "Usage: with-mlb-dependencies <buildcommand> <buildargs>"
+  exit 1
+}
+
+$mydir = Split-Path -Parent $PSCommandPath
+
+. $mydir/smlbuild-include.ps1
+
+$mlb = ""
+$sml = ""
+$output = ""
+$expecting_output = $false
+
+foreach ($arg in $args) {
+
+  if ($expecting_output) {
+    $output = $arg
+    $expecting_output = $false
+  } else {
+    if ($arg -match "[.]mlb$") {
+      $mlb = $arg
+    } elseif ($arg -match "[.]sml") {
+      $sml = $arg
+    } elseif ($arg -match "-o") {
+      $expecting_output = $true
+    } elseif ($arg -match "-output") {
+      $expecting_output = $true
+    }
+    if ($mlb) {
+      break
+    }
+  }
+}
+
+"mlb = $mlb" | Out-Host
+"sml = $sml" | Out-Host
+"output = $output" | Out-Host
+
+$compiler=$args[0]
+$compiler_args=$args[1..$args.length]
+
+"Running $compiler $compiler_args..." | Out-Host
+
+&$compiler $compiler_args | Out-Host
+
+"Completed" | Out-Host
+
+if ($mlb) {
+
+  if (!$output) {
+    $output = $mlb -replace "[.]mlb$",".exe"
+  }
+  $deps = "$output.deps"
+
+  $lines = @(listMLB $mlb)
+
+  if ($lines -match "^Error: ") {
+    $lines -match "^Error: "
+    exit 1
+  }
+
+  $lines = $lines -replace "^","${output}: "
+
+  $lines | Out-File -Encoding "ASCII" $deps
+
+} elseif ($sml) {
+
+  if (!$output) {
+    $output = $sml -replace "[.]mlb$",".exe"
+  }
+  $deps = "$output.deps"
+
+  "${target}: $sml" | Out-File -Encoding "ASCII" $deps
+}
+
+

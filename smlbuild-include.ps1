@@ -1,7 +1,7 @@
 
 $libdir = "c:/Users/Chris/Documents/mlton-20150109-all-mingw-492/lib/sml"
 
-function script:processMLB($m) {
+function script:listMLB($m) {
 
   if (! (Test-Path $m)) {
     "Error: file not found: " + $m
@@ -47,15 +47,12 @@ function script:processMLB($m) {
     if ($path -match "[.]mlb$") {
 
       # recurse to expand included mlb
-      $expanded += @(processMLB $path)
+      $expanded += @(listMLB $path)
       
     } elseif ($path -match "[.](sml|sig)$") {
 
       # use forward slashes for path separators
-      $path = $path -replace "\\","/";
-
-      # add use declaration
-      $path = $path -replace "^(.*)$",'use "$1";'
+      $path = $path -replace "\\","/"
 
       $expanded += $path
 
@@ -66,3 +63,29 @@ function script:processMLB($m) {
 
   $expanded
 }
+
+function script:processMLB($m) {
+
+  $lines = @(listMLB $mlb)
+
+  if ($lines -match "^Error: ") {
+    $lines -match "^Error: "
+  } else {
+
+    $expanded = @()
+
+    foreach ($line in $lines) {
+
+      $path = $line
+
+      # add use declaration
+      $path = $path -replace "^(.*)$",'use "$1";'
+
+      $expanded += $path
+    }
+
+    $expanded
+  }
+}
+
+
