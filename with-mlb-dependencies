@@ -71,4 +71,7 @@ deps="$output".deps
 
 shift
 
-env $env_args "$mydir/mlb-dependencies" "$arg" > "$deps"
+env $env_args \
+    "$mydir/mlb-dependencies" "$arg" | \
+    sed 's/^[^:]*: /'"$output: "'/' \
+        > "$deps"
