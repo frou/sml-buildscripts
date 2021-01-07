@@ -1,5 +1,14 @@
 
-$libdir = "c:/Users/Chris/Documents/mlton-20150109-all-mingw-492/lib/sml"
+$libdir = "C:\mlton-20201002-1.amd64-mingw-gmp-dynamic\lib\mlton\sml"
+
+#$mlton = (Get-Command mlton -ErrorAction SilentlyContinue).Path
+#if ($mlton -ne "") {
+#   $libdir = "$mlton\..\lib\mlton\sml"
+#}
+
+$libdir = $libdir -Replace "\\","/"
+
+"Using ""$libdir"" as SML_LIB path"
 
 function script:listMLB($m) {
 
@@ -10,8 +19,8 @@ function script:listMLB($m) {
 
   $lines = @(Get-Content $m)
 
-  # remove incompatible Basis lib and unneeded call to main
-  $lines = $lines -notmatch "basis[.]mlb" -notmatch "main[.]sml"
+  # remove incompatible Basis lib, MLton lib, and unneeded call to main
+  $lines = $lines -notmatch "basis[.]mlb" -notmatch "mlton[.]mlb" -notmatch "main[.]sml"
 
   # remove ML-style comments
   $lines = $lines -replace "\(\*[^\*]*\*\)",""

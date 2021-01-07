@@ -16,6 +16,8 @@ $sml = ""
 $output = ""
 $expecting_output = $false
 
+$args = $args -Replace "_DASH_","-"
+
 foreach ($arg in $args) {
 
   if ($expecting_output) {
@@ -44,7 +46,8 @@ foreach ($arg in $args) {
 $compiler=$args[0]
 $compiler_args=$args[1..$args.length]
 
-"Running $compiler $compiler_args..." | Out-Host
+"Running compiler: $compiler" | Out-Host
+"with args: $compiler_args" | Out-Host
 
 &$compiler $compiler_args | Out-Host
 
