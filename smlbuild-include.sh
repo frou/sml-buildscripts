@@ -55,12 +55,14 @@ cat_mlb() {
 	local trimmed
 	trimmed=$(
 	    # shellcheck disable=SC2016
-	    echo "$line" | 
-		sed 's|(\*.*\*)||' |              # remove ML-style comments
-		sed 's#$(SML_LIB)#'"${lib}"'#g' | # expand library path
-		perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|' | # expand other vars
-		sed 's|^ *||' |                   # remove leading whitespace
-		sed 's|[[:space:]]*$||')          # remove trailing whitespace
+	    echo "$line" |
+                # remove ML-style comments; expand library path;
+                # remove leading whitespace; remove trailing whitespace:
+		sed -e 's|(\*.*\*)||' -e 's#$(SML_LIB)#'"${lib}"'#g' \
+                    -e 's|^ *||' -e 's|[[:space:]]*$||' |
+                # expand other vars:
+		perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|'
+               )
 	local path="$trimmed"
 	case "$path" in
 	    "") ;;		                  # keep empty lines for ignoring later
