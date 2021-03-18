@@ -49,7 +49,7 @@ $tmpfile = ([System.IO.Path]::GetTempFileName()) -replace "[.]tmp",".sml"
 
 $script | Out-File -Encoding "ASCII" $tmpfile
 
-cat $tmpfile | polyml $args[1..$args.Length] | Out-Host
+cat $tmpfile | polyml --error-exit $args[1..$args.Length] | Out-Host
 
 if (-not $?) {
     del $tmpfile
