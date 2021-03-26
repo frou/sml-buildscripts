@@ -58,8 +58,11 @@ if ($mlb) {
   if (!$output) {
     $output = $mlb -replace "[.]mlb$",".exe"
   }
-  $deps = "$output.deps"
+  $base = $output -replace "[.]exe$",""
+  $deps = "$base.deps"
 
+  "Writing dependencies to $deps"
+    
   $lines = @(listMLB $mlb)
 
   if ($lines -match "^Error: ") {
@@ -76,8 +79,11 @@ if ($mlb) {
   if (!$output) {
     $output = $sml -replace "[.]mlb$",".exe"
   }
-  $deps = "$output.deps"
+  $base = $output -replace "[.]exe$",""
+  $deps = "$base.deps"
 
+  "Writing dependencies to $deps"
+    
   "${target}: $sml" | Out-File -Encoding "ASCII" $deps
 }
 
