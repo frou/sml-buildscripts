@@ -33,11 +33,22 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = "Stop"
 
 if ($args.Count -lt 1) {
-  "Usage: polybuild file.mlb"
+  "Usage: polybuild [-o output.exe] file.mlb"
   exit 1
 }
 
-$mlb = $args[0]
+if ($args[0] -eq "-o") {
+
+    $output_file = $args[1]
+    $mlb = $args[2]
+
+} else {
+
+    $mlb = $args[0]
+
+    $output_file = $mlb -replace ".mlb",""
+    $output_file = "$output_file.exe"
+}
 
 if ($mlb -notmatch "[.]mlb$") {
   "Error: argument must be a .mlb file"
@@ -66,9 +77,6 @@ if ($lines -match "^Error: ") {
 
 $tmpfile_in = ([System.IO.Path]::GetTempFileName()) -replace "[.]tmp",".sml"
 $tmpfile_out = ([System.IO.Path]::GetTempFileName()) -replace "[.]tmp",".obj"
-
-$output_file = $mlb -replace ".mlb",""
-$output_file = "$output_file.exe"
 
 $outro = @"
 val _ = PolyML.export("$tmpfile_out", main);
