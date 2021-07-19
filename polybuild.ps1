@@ -20,13 +20,16 @@ sufficiently recent Visual Studio command prompt with clang support.
 # NB just installing Poly/ML for Windows is not enough to get the
 # Poly/ML libraries, because the export libraries such as PolyLib.lib
 # are not included in the installation.
-
+#
 # To build them, check out Poly/ML from git or whatever, then go to
 # its repo in a VC command prompt and
-
+#
 # > msbuild polyml.sln /p:Configuration=Release '/t:PolyLib;PolyML;PolyMainLib'
-
+#
 # then set the x64\Release subdir of the Poly/ML dir as $env:POLY_DIR.
+#
+# You will also need to ensure PolyLib.dll is available at runtime
+# (e.g. in the same place as your executable).
 
 
 Set-StrictMode -Version 2.0
