@@ -54,6 +54,8 @@ cat_mlb() {
         fi
 	local trimmed
 	trimmed=$(
+            # Tell shellcheck that the $-variables in single-quotes
+            # are not intended for bash to expand
 	    # shellcheck disable=SC2016
 	    echo "$line" |
                 # remove ML-style comments; expand library path;

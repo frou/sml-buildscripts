@@ -26,7 +26,7 @@ if [ -z "$arg" ]; then
     echo "       $0 [-v] file.mlb" 1>&2
     echo " where" 1>&2
     echo "   -v: Do not suppress output from interactive environment" 1>&2
-    exit 1
+    exit 2
 fi
 
 shift

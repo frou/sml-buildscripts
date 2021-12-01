@@ -11,6 +11,7 @@ arg="$1"
 
 if [ -z "$arg" ]; then
     echo "Usage: $0 file.mlb" 1>&2
+    exit 2
 fi
 
 set -u
