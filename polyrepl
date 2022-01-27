@@ -7,11 +7,19 @@
 
 set -e
 
+debug=no
+if [ "$1" = "-d" ]; then
+    debug=yes
+    shift
+fi
+
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 file.sml" 1>&2
-    echo "       $0 file.mlb" 1>&2
+    echo "Usage: $0 [-d] file.sml" 1>&2
+    echo "       $0 [-d] file.mlb" 1>&2
+    echo "where" 1>&2
+    echo "  -d: Enable Poly/ML compiler debug mode before reading SML source" 1>&2
     exit 1
 fi
 
@@ -23,5 +31,10 @@ mydir=$(dirname "$0")
 
 out=$(get_outfile "$arg")  # we don't use this, but it does some arg error checking
 
-rlwrap poly $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/')
+if [ "$debug" = "yes" ]; then
+    rlwrap poly --eval 'PolyML.Compiler.debug := true;' $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/') --eval '"Entering trace mode; evaluate `PolyML.Debug.trace false` to leave";' --eval 'PolyML.Debug.trace true;'
+else
+    rlwrap poly $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/')
+fi
+
 

@@ -6,7 +6,7 @@
 # practice, not bad: clearer, safer, less error-prone.
 # shellcheck disable=SC2002
 
-debug=no
+internal_debug=no
 
 if [ -z "${SML_LIB:-}" ]; then
     lib=/usr/lib/mlton/sml
@@ -30,7 +30,7 @@ canonicalise() {
 simplify() {
     local path="$1"
     simple=$(canonicalise "$path")
-    if [ "$debug" = "yes" ]; then
+    if [ "$internal_debug" = "yes" ]; then
 	echo "simplified \"$path\" to \"$simple\"" 1>&2
     fi
     if [ ! -f "$simple" ]; then
@@ -45,11 +45,11 @@ cat_mlb() {
     if [ ! -f "$mlb" ]; then exit 1; fi
     local dir
     dir=$(dirname "$mlb")
-    if [ "$debug" = "yes" ]; then
+    if [ "$internal_debug" = "yes" ]; then
 	echo "reading MLB file \"$mlb\":" 1>&2
     fi
     cat "$mlb" | while read -r line; do
-        if [ "$debug" = "yes" ]; then
+        if [ "$internal_debug" = "yes" ]; then
 	    echo "read line \"$line\":" 1>&2
         fi
 	local trimmed
@@ -82,7 +82,7 @@ cat_mlb() {
             *) echo "*** Warning: unsupported syntax or file in $mlb: $trimmed" 1>&2
 	esac
     done
-    if [ "$debug" = "yes" ]; then
+    if [ "$internal_debug" = "yes" ]; then
 	echo "finished reading MLB file \"$mlb\"" 1>&2
     fi
 }
