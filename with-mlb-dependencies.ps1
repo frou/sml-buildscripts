@@ -46,10 +46,9 @@ foreach ($arg in $args) {
 $compiler=$args[0]
 $compiler_args=$args[1..$args.length]
 
-"Running compiler: $compiler" | Out-Host
-"with args: $compiler_args" | Out-Host
+"$compiler $compiler_args" | Out-File ".mlb-dependencies-command"
 
-&$compiler $compiler_args | Out-Host
+&$compiler $compiler_args | Tee-Object -FilePath ".mlb-dependencies-output" | Out-Host
 
 "Completed" | Out-Host
 
