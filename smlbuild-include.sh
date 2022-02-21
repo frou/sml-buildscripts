@@ -41,7 +41,7 @@ simplify() {
 }
 
 cat_mlb() {
-    local mlb=$(simplify "$1")
+    local mlb=$(canonicalise "$1")
     if [ ! -f "$mlb" ]; then exit 1; fi
     local dir
     dir=$(dirname "$mlb")
@@ -53,18 +53,26 @@ cat_mlb() {
 	    echo "read line \"$line\":" 1>&2
         fi
 	local trimmed
-	trimmed=$(
-            # Tell shellcheck that the $-variables in single-quotes
-            # are not intended for bash to expand
-	    # shellcheck disable=SC2016
-	    echo "$line" |
-                # remove ML-style comments; expand library path;
-                # remove leading whitespace; remove trailing whitespace:
-		sed -e 's|(\*.*\*)||' -e 's#$(SML_LIB)#'"${lib}"'#g' \
-                    -e 's|^ *||' -e 's|[[:space:]]*$||' |
-                # expand other vars:
-		perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|'
-               )
+        # remove leading and trailing whitespace
+        trimmed="${line#"${line%%[![:space:]]*}"}"
+        trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+        case "$trimmed" in
+            # check for ML-style comments or variable sigils; only
+            # launch a further substitution if we see any
+            *[\($]*) 
+                # Tell shellcheck that the $-variables in
+                # single-quotes are not intended for bash to expand
+                # shellcheck disable=SC2016
+	        trimmed=$(
+                    echo "$trimmed" |
+                        # remove ML-style comments; expand library path
+		        sed -e 's|(\*.*\*)||' -e 's#$(SML_LIB)#'"${lib}"'#g' |
+                        # expand other vars:
+		        perl -p -e 's|\$\(([A-Za-z_-]+)\)|$ENV{$1}|'
+                       )
+                ;;
+            *) ;;
+        esac
 	local path="$trimmed"
 	case "$path" in
 	    "") ;;		                  # keep empty lines for ignoring later
@@ -89,12 +97,25 @@ cat_mlb() {
 
 expand_arg() {
     local arg="$1"
+    local unique="no"
+    case "$arg" in
+        "-u") unique=yes
+              shift
+              arg="$1" ;;
+        *) ;;
+    esac
     case "$arg" in
 	*.sml) echo "$arg" ;;
 	*.mlb) cat_mlb "$arg" ;;
 	*) echo "*** Error: .sml or .mlb file must be provided" 1>&2
 	   exit 1 ;;
-    esac
+    esac | (
+        if [ "$unique" = "yes" ]; then
+            cat -n | sort +1 -u | sort -n | awk '{ print $2; }'
+        else
+            cat
+        fi
+    )
 }
 
 get_base() {
