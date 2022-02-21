@@ -144,7 +144,7 @@ summarise_for() {
 if [ "$srcfile" = "" ]; then
 
     summarise_for "sml"
-    expand_arg "$mlb" | grep -v '^/' | grep -v '\.sig$' | LANG=C LC_ALL=C sort |
+    expand_arg -u "$mlb" | grep -v '^/' | grep -v '\.sig$' | LANG=C LC_ALL=C sort |
 	while read x; do
 	    summarise_for "$x" ;
 	done

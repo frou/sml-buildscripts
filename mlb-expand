@@ -3,14 +3,22 @@
 # mlb-dependencies - read a MLB file defining an SML program and print
 # out a list of the files referred to by it and any subsidiary MLB files
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
+
+unique=no
+if [ "$1" = "-u" ]; then
+    unique=yes
+    shift
+fi
 
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 file.mlb" 1>&2
+    echo "Usage: $0 [-u] file.mlb" 1>&2
+    echo " where" 1>&2
+    echo "   -u: List each file only the first time it appears (unique list)" 1>&2
     exit 2
 fi
 
@@ -21,5 +29,9 @@ mydir=$(dirname "$0")
 
 base=$(get_outfile "$arg")
 
-expand_arg "$arg"
+if [ "$unique" = "yes" ]; then
+    expand_arg -u "$arg"
+else
+    expand_arg "$arg"
+fi
 

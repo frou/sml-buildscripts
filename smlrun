@@ -2,14 +2,35 @@
 #
 # smlrun - run a SML program defined in a SML or MLB file using SML/NJ
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
+
+usage() {
+    me=$(basename "$0")
+    echo 1>&2
+    echo "$me: Run a SML program defined in a MLB file using SML/NJ" 1>&2
+    echo 1>&2
+    echo "Usage: $me [-v] file.sml" 1>&2
+    echo "       $me [-u] [-v] file.mlb" 1>&2
+    echo "where" 1>&2
+    echo "   -u: Unique: \"use\" each file only once, regardless of how many times it" 1>&2
+    echo "       appears in the MLB file. See \"polybuild\" for discussion." 1>&2
+    echo "   -v: Verbose: Do not suppress output from interactive environment." 1>&2
+    echo 1>&2
+    exit 2
+}
 
 if echo | sml | grep -q Jersey ; then :
 else
     echo "*** Error: SML/NJ binary 'sml' not in path" 1>&2
     exit 1
+fi
+
+unique_arg=""
+if [ "$1" = "-u" ]; then
+    unique_arg="-u"
+    shift
 fi
 
 verbose=no
@@ -21,11 +42,7 @@ fi
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 [-v] file.sml" 1>&2
-    echo "       $0 [-v] file.mlb" 1>&2
-    echo " where" 1>&2
-    echo "   -v: Do not suppress output from interactive environment" 1>&2
-    exit 2
+    usage
 fi
 
 shift
@@ -41,7 +58,7 @@ trap "rm -f ${tmpout}" 0
 
 case "$verbose" in
     yes)
-        expand_arg "$arg" | \
+        expand_arg -u "$arg" | \
             sed 's/^\(.*\)$/use "\1";/' |       # wrap filenames in REPL use calls
             (
 	        cat -
@@ -55,7 +72,7 @@ EOF
         ;;
 
     no)
-        expand_arg "$arg" | \
+        expand_arg -u "$arg" | \
             sed 's/^\(.*\)$/use "\1";/' |       # wrap filenames in REPL use calls
             (
 	        cat <<EOF

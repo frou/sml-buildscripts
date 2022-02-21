@@ -3,7 +3,7 @@
 # mlb-dependencies - read a MLB file defining an SML program and print
 # out a dependency list in Makefile format
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
 
@@ -27,5 +27,5 @@ base=$(get_outfile "$arg")
 # resolving the distinction (in order to keep regression tests passing
 # across platforms) was too much of a faff for a small aesthetic gain
 
-expand_arg "$arg" | sed 's|^|'"$base"': |'
+expand_arg -u "$arg" | sed 's|^|'"$base"': |'
 

@@ -3,9 +3,23 @@
 # smlrepl - load a SML program defined in a MLB file into the SML/NJ
 # interactive environment
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
+
+usage() {
+    me=$(basename "$0")
+    echo 1>&2
+    echo "$me: Load a SML program defined in a MLB file into the SML/NJ repl" 1>&2
+    echo 1>&2
+    echo "Usage: $me file.sml" 1>&2
+    echo "       $me [-u] file.mlb" 1>&2
+    echo "where" 1>&2
+    echo "   -u: Unique: \"use\" each file only once, regardless of how many times it" 1>&2
+    echo "       appears in the MLB file. See \"polybuild\" for discussion." 1>&2
+    echo 1>&2
+    exit 2
+}
 
 if echo | sml | grep -q Jersey ; then :
 else
@@ -13,13 +27,16 @@ else
     exit 1
 fi
 
+unique_arg=""
+if [ "$1" = "-u" ]; then
+    unique_arg="-u"
+    shift
+fi
+
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 [-v] file.sml" 1>&2
-    echo "       $0 [-v] file.mlb" 1>&2
-    echo " where" 1>&2
-    exit 1
+    usage
 fi
 
 shift
@@ -33,7 +50,7 @@ tmpout=$(get_tmpsmlfile "$arg")
 
 trap "rm -f ${tmpout}" 0
 
-expand_arg "$arg" | \
+expand_arg $unique_arg "$arg" | \
     sed 's/^\(.*\)$/use "\1";/' > \
         "$tmpout"
 

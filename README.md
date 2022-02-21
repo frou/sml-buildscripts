@@ -168,7 +168,7 @@ Further notes
 Author, copyright, and licence
 ------------------------------
 
-Written by Chris Cannam, copyright 2015-2018.
+Written by Chris Cannam, copyright 2015-2022.
 
 These scripts are provided under the MIT licence:
 

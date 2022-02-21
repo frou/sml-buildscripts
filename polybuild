@@ -2,16 +2,37 @@
 #
 # polybuild - compile a SML program defined in a MLB file using Poly/ML
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
 
 usage() {
     me=$(basename "$0")
+    echo 1>&2
+    echo "$me: Compile a SML program defined in a MLB file using Poly/ML" 1>&2
+    echo 1>&2
     echo "Usage: $me [-o output] file.sml" 1>&2
-    echo "       $me [-o output] file.mlb" 1>&2
-    exit 1
+    echo "       $me [-u] [-o output] file.mlb" 1>&2
+    echo " where" 1>&2
+    echo "   -u: Unique: \"use\" each file only once, regardless of how many times it" 1>&2
+    echo "       appears in the MLB file and its dependencies. The default is to use" 1>&2
+    echo "       a file again each time it appears." 1>&2
+    echo "       Neither mode complies with the official interpretation for MLB files" 1>&2
+    echo "       in this respect (that's much harder to do). Both modes may compile" 1>&2
+    echo "       code that the other mode does not!" 1>&2
+    echo "       Unique mode is usually faster and is never much slower." 1>&2
+    echo 1>&2
+    echo "This script is not part of Poly/ML and has no official status." 1>&2
+    echo "Written by Chris Cannam, 2015-2022." 1>&2
+    echo 1>&2
+    exit 2
 }
+
+unique_arg=""
+if [ "$1" = "-u" ]; then
+    unique_arg="-u"
+    shift
+fi
 
 arg="$1"
 
@@ -42,7 +63,7 @@ tmpobj=$(get_tmpobjfile "$arg")
 
 trap "rm -f ${tmpobj}" 0
 
-( expand_arg "$arg" |
+( expand_arg $unique_arg "$arg" |
 	sed 's|^\(.*\)$|use "\1";|' ;            # wrap filenames in REPL use calls
   echo 'PolyML.export("'"$tmpobj"'", main);' ) | # ask poly to export object file
     poly -q --error-exit &&

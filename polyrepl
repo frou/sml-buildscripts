@@ -3,9 +3,30 @@
 # polyrepl - load a SML program defined in a MLB file into the Poly/ML
 # interactive environment
 #
-# Chris Cannam, 2015-2018. MIT licence
+# Chris Cannam, 2015-2022. MIT licence
 
 set -e
+
+usage() {
+    me=$(basename "$0")
+    echo 1>&2
+    echo "$me: Load a SML program defined in a MLB file into the Poly/ML repl" 1>&2
+    echo 1>&2
+    echo "Usage: $me [-d] file.sml" 1>&2
+    echo "       $me [-u] [-d] file.mlb" 1>&2
+    echo "where" 1>&2
+    echo "   -u: Unique: \"use\" each file only once, regardless of how many times it" 1>&2
+    echo "       appears in the MLB file. See \"polybuild\" for discussion." 1>&2
+    echo "   -d: Enable Poly/ML compiler debug mode before reading SML source." 1>&2
+    echo 1>&2
+    exit 2
+}
+
+unique_arg=""
+if [ "$1" = "-u" ]; then
+    unique_arg="-u"
+    shift
+fi
 
 debug=no
 if [ "$1" = "-d" ]; then
@@ -16,11 +37,7 @@ fi
 arg="$1"
 
 if [ -z "$arg" ]; then
-    echo "Usage: $0 [-d] file.sml" 1>&2
-    echo "       $0 [-d] file.mlb" 1>&2
-    echo "where" 1>&2
-    echo "  -d: Enable Poly/ML compiler debug mode before reading SML source" 1>&2
-    exit 1
+    usage
 fi
 
 shift
@@ -32,9 +49,9 @@ mydir=$(dirname "$0")
 out=$(get_outfile "$arg")  # we don't use this, but it does some arg error checking
 
 if [ "$debug" = "yes" ]; then
-    rlwrap poly --eval 'PolyML.Compiler.debug := true;' $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/') --eval '"Entering trace mode; evaluate `PolyML.Debug.trace false` to leave";' --eval 'PolyML.Debug.trace true;'
+    rlwrap poly --eval 'PolyML.Compiler.debug := true;' $(expand_arg $unique_arg "$arg" | sed 's/^\(.*\)$/--use \1/') --eval '"Entering trace mode; evaluate `PolyML.Debug.trace false` to leave";' --eval 'PolyML.Debug.trace true;'
 else
-    rlwrap poly $(expand_arg "$arg" | sed 's/^\(.*\)$/--use \1/')
+    rlwrap poly $(expand_arg -u "$arg" | sed 's/^\(.*\)$/--use \1/')
 fi
 
 
