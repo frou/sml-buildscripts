@@ -48,10 +48,12 @@ mydir=$(dirname "$0")
 
 out=$(get_outfile "$arg")  # we don't use this, but it does some arg error checking
 
+RLWRAP_FLAGS="--prompt=magenta --wait-before-prompt -40 --remember --complete-filenames"
+
 if [ "$debug" = "yes" ]; then
-    rlwrap poly --eval 'PolyML.Compiler.debug := true;' $(expand_arg $unique_arg "$arg" | sed 's/^\(.*\)$/--use \1/') --eval '"Entering trace mode; evaluate `PolyML.Debug.trace false` to leave";' --eval 'PolyML.Debug.trace true;'
+    rlwrap $RLWRAP_FLAGS poly --eval 'PolyML.Compiler.debug := true;' $(expand_arg $unique_arg "$arg" | sed 's/^\(.*\)$/--use \1/') --eval '"Entering trace mode; evaluate `PolyML.Debug.trace false` to leave";' --eval 'PolyML.Debug.trace true;'
 else
-    rlwrap poly $(expand_arg -u "$arg" | sed 's/^\(.*\)$/--use \1/')
+    rlwrap $RLWRAP_FLAGS poly $(expand_arg -u "$arg" | sed 's/^\(.*\)$/--use \1/')
 fi
 
 
